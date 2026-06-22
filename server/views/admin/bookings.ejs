@@ -1,0 +1,106 @@
+<% let path='/admin/bookings'; let title='订单管理 - 智慧旅游'; %>
+<%- include('../partials/header', { path, title }) %>
+
+<style>
+  .admin-layout { display:flex; min-height:calc(100vh - 60px); }
+  .admin-sidebar { width:220px; background:#2c3e50; color:#fff; padding:20px 0; flex-shrink:0; }
+  .admin-sidebar a { display:block; padding:12px 20px; color:#bdc3c7; text-decoration:none; font-size:14px; }
+  .admin-sidebar a:hover, .admin-sidebar a.active { background:#34495e; color:#fff; }
+  .admin-main { flex:1; padding:25px; background:#f5f6fa; }
+  .table-wrap { background:#fff; border-radius:8px; padding:20px; overflow-x:auto; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+  table.admin-table { width:100%; border-collapse:collapse; font-size:13px; }
+  table.admin-table th { background:#f8f9fa; padding:10px; text-align:left; border-bottom:2px solid #dee2e6; color:#555; }
+  table.admin-table td { padding:10px; border-bottom:1px solid #eee; vertical-align:middle; }
+  table.admin-table tr:hover { background:#f8f9fa; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:bold; }
+  .badge-pending { background:#fff3cd; color:#856404; }
+  .badge-confirmed { background:#d4edda; color:#155724; }
+  .badge-completed { background:#cce5ff; color:#004085; }
+  .badge-cancelled { background:#f8d7da; color:#721c24; }
+  .filter-tabs { display:flex; gap:0; margin-bottom:20px; }
+  .filter-tabs a { padding:8px 20px; border:1px solid #dee2e6; background:#fff; color:#555; text-decoration:none; font-size:13px; }
+  .filter-tabs a:first-child { border-radius:4px 0 0 4px; }
+  .filter-tabs a:last-child { border-radius:0 4px 4px 0; }
+  .filter-tabs a.active { background:#3498db; color:#fff; border-color:#3498db; }
+  .status-form { display:inline; }
+  .status-form select { padding:4px 8px; border:1px solid #ddd; border-radius:3px; font-size:12px; }
+  .status-form button { padding:4px 10px; background:#59b200; color:#fff; border:none; border-radius:3px; cursor:pointer; font-size:12px; }
+</style>
+
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <div style="padding:15px 20px;border-bottom:1px solid #34495e;margin-bottom:10px;"><strong>⚙️ 管理面板</strong></div>
+    <a href="/admin"><span class="icon">📊</span> 概览</a>
+    <a href="/admin/tours"><span class="icon">🏝️</span> 线路管理</a>
+    <a href="/admin/questions"><span class="icon">❓</span> 问答管理</a>
+    <a href="/admin/users"><span class="icon">👥</span> 用户管理</a>
+    <a href="/admin/contacts"><span class="icon">📬</span> 留言管理</a>
+    <a href="/admin/bookings" class="active"><span class="icon">📋</span> 订单管理</a>
+    <a href="/" style="margin-top:30px;border-top:1px solid #34495e;padding-top:15px;"><span class="icon">🏠</span> 返回前台</a>
+  </div>
+  <div class="admin-main">
+    <h2 style="color:#2c3e50;margin:0 0 20px;">📋 订单管理</h2>
+
+    <div class="filter-tabs">
+      <a href="/admin/bookings" class="<%= currentStatus === 'all' ? 'active' : '' %>">全部</a>
+      <a href="/admin/bookings?status=pending" class="<%= currentStatus === 'pending' ? 'active' : '' %>">待确认</a>
+      <a href="/admin/bookings?status=confirmed" class="<%= currentStatus === 'confirmed' ? 'active' : '' %>">已确认</a>
+      <a href="/admin/bookings?status=completed" class="<%= currentStatus === 'completed' ? 'active' : '' %>">已完成</a>
+      <a href="/admin/bookings?status=cancelled" class="<%= currentStatus === 'cancelled' ? 'active' : '' %>">已取消</a>
+    </div>
+
+    <div class="table-wrap">
+      <% if (bookings.length === 0) { %>
+        <p style="text-align:center;color:#999;padding:40px;">暂无订单</p>
+      <% } else { %>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>订单号</th>
+              <th>线路</th>
+              <th>客户</th>
+              <th>电话</th>
+              <th>出行日期</th>
+              <th>人数</th>
+              <th>总价</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% bookings.forEach(function(b) { %>
+              <tr>
+                <td>#<%= b.id %></td>
+                <td><%= b.tour_title.substring(0, 20) %><%= b.tour_title.length > 20 ? '...' : '' %></td>
+                <td><%= b.username %></td>
+                <td><%= b.phone %></td>
+                <td><%= b.travel_date %></td>
+                <td><%= b.adults %>大<%= b.children > 0 ? b.children + '小' : '' %></td>
+                <td><strong>¥<%= b.total_price.toFixed(0) %></strong></td>
+                <td>
+                  <span class="badge badge-<%= b.status %>">
+                    <%= b.status === 'pending' ? '待确认' : b.status === 'confirmed' ? '已确认' : b.status === 'completed' ? '已完成' : '已取消' %>
+                  </span>
+                </td>
+                <td>
+                  <form class="status-form" method="POST" action="/admin/bookings/status">
+                    <input type="hidden" name="id" value="<%= b.id %>">
+                    <select name="status">
+                      <option value="pending" <%= b.status === 'pending' ? 'selected' : '' %>>待确认</option>
+                      <option value="confirmed" <%= b.status === 'confirmed' ? 'selected' : '' %>>已确认</option>
+                      <option value="completed" <%= b.status === 'completed' ? 'selected' : '' %>>已完成</option>
+                      <option value="cancelled" <%= b.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
+                    </select>
+                    <button type="submit">更新</button>
+                  </form>
+                  <% if (b.note) { %><div style="font-size:11px;color:#888;margin-top:4px;">📝 <%= b.note %></div><% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

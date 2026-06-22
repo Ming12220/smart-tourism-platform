@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : '智慧旅游在线服务平台' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/swiper-bundle.min.css">
+  <style>
+    /* Quick fixes for the responsive rebuild */
+    * { box-sizing: border-box; }
+    body { font-family: '微软雅黑', 'PingFang SC', 'Helvetica Neue', sans-serif; margin: 0; padding: 0; }
+    a { text-decoration: none; color: inherit; }
+    .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 15px; }
+    .nav { position: fixed; left: 10px; top: 50%; z-index: 99; transform: translateY(-50%); border-radius: 10px; overflow: hidden; }
+    .nav ul { margin: 0; padding: 0; list-style: none; }
+    .nav ul li { text-align: center; width: 75px; height: 40px; line-height: 40px; background-color: #333; }
+    .nav ul li a { color: #fff; font-size: 15px; display: block; }
+    .nav ul li:hover { background-color: #000; }
+    .nav ul li.active { background-color: #59b200; }
+    header { width: 100%; background-color: #333; height: 60px; }
+    header .header-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 60px; padding: 0 15px; }
+    header .header-inner ul { margin: 0; padding: 0; display: flex; align-items: center; gap: 8px; list-style: none; }
+    header .header-inner ul li button { border: none; height: 28px; padding: 0 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    header .header-inner ul li .btn-reg { background: #59b200; color: #fff; }
+    header .header-inner ul li .btn-login { background: #fff; color: #333; }
+    header .header-inner ul li .btn-help { background: #666; color: #fff; }
+    header .header-inner .user-info { color: #fff; font-size: 14px; display: flex; align-items: center; gap: 15px; }
+    header .header-inner .user-info a { color: #59b200; }
+    header .header-inner .user-info .badge-admin { background: #ff6600; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+    .bottom { background-color: #222; padding: 30px 0; }
+    .bottom .bottom-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; padding: 0 15px; }
+    .bottom .bottom-inner .footer-col { min-width: 200px; }
+    .bottom .bottom-inner .footer-col h4 { color: #fff; font-size: 15px; margin-bottom: 10px; }
+    .bottom .bottom-inner .footer-col ul { list-style: none; padding: 0; margin: 0; }
+    .bottom .bottom-inner .footer-col ul li { padding: 4px 0; color: #898988; font-size: 13px; }
+    .bottom .bottom-inner .footer-col ul li a { color: #898988; transition: 0.3s; }
+    .bottom .bottom-inner .footer-col ul li a:hover { color: #fff; }
+    .bottom .bottom-inner .footer-col .social-icons a { display: inline-block; margin-right: 15px; margin-top: 10px; }
+    .bottom .bottom-inner .footer-col .social-icons img { width: 28px; height: 28px; }
+    .copy { background-color: #000; padding: 15px 0; text-align: center; color: #898988; font-size: 13px; }
+    .flash-msg { background: #d4edda; color: #155724; padding: 10px 20px; text-align: center; font-size: 14px; }
+    .flash-error { background: #f8d7da; color: #721c24; padding: 10px 20px; text-align: center; font-size: 14px; }
+    .content-wrapper { max-width: 1400px; margin: 20px auto; padding: 0 15px; display: flex; gap: 20px; }
+    @media (max-width: 768px) {
+      .nav { position: fixed; left: 0; top: auto; bottom: 0; width: 100%; transform: none; border-radius: 0; display: flex; }
+      .nav ul { display: flex; width: 100%; }
+      .nav ul li { flex: 1; width: auto; }
+      .content-wrapper { flex-direction: column; }
+      .banner { height: 300px; }
+      .search { width: 90%; max-width: 400px; }
+      .search input { width: 70%; }
+      .search button { width: 28%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/"><img src="/img/logo.jpg" alt="智慧旅游" height="50" style="margin-top:5px"></a>
+      <% if (user) { %>
+        <div class="user-info">
+          <span>👋 <%= user.username %></span>
+          <% if (user.role === 'admin') { %>
+            <span class="badge-admin">管理员</span>
+            <a href="/admin">后台管理</a>
+          <% } %>
+          <a href="/my-bookings" style="color:#59b200;font-weight:bold;">📋 我的订单</a>
+          <a href="/logout" style="color:#ff6b6b;">退出</a>
+        </div>
+      <% } else { %>
+        <ul>
+          <li><a href="/register"><button class="btn-reg">注册</button></a></li>
+          <li><a href="/login"><button class="btn-login">登录</button></a></li>
+          <li><button class="btn-help">帮助</button></li>
+        </ul>
+      <% } %>
+    </div>
+  </header>
+
+  <div class="nav">
+    <ul>
+      <li class="<%= path === '/' ? 'active' : '' %>"><a href="/">首页</a></li>
+      <li class="<%= path === '/lyzx' ? 'active' : '' %>"><a href="/lyzx">旅游咨询</a></li>
+      <li class="<%= path === '/lywd' ? 'active' : '' %>"><a href="/lywd">旅游问答</a></li>
+      <li class="<%= path === '/zmzg' ? 'active' : '' %>"><a href="/zmzg">最美中国</a></li>
+      <li class="<%= path === '/gwjd' ? 'active' : '' %>"><a href="/gwjd">国外景点</a></li>
+    </ul>
+  </div>

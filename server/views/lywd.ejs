@@ -1,0 +1,121 @@
+<% let path='/lywd'; let title='旅游问答 - 智慧旅游'; %>
+<%- include('partials/header', { path, title }) %>
+
+<div class="content-wrapper" style="display:block;padding-top:60px;">
+  <div style="max-width:1400px;margin:0 auto;">
+    <h1 style="color:#666;font-size:28px;border-bottom:2px solid #59b200;padding-bottom:15px;">旅游问答</h1>
+    <p style="color:#898988;font-size:14px;margin-top:5px;">精选旅游问答，解决您的出行疑虑</p>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:30px;margin-top:20px;">
+      <!-- Main Q&A List -->
+      <div>
+        <% questions.forEach(function(q) { %>
+          <div style="border:1px solid #ececec;border-radius:4px;padding:25px;margin-bottom:20px;transition:box-shadow 0.3s;"
+               onmouseover="this.style.boxShadow='0 0 8px #ccc'" onmouseout="this.style.boxShadow='none'">
+            <div style="margin-bottom:5px;">
+              <span style="color:#959595;font-size:13px;">
+                <img src="/img/logo.png" alt="" style="width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:5px;">
+                <%= q.author || '匿名用户' %>
+              </span>
+            </div>
+            <div style="margin-bottom:10px;">
+              <a href="javascript:void(0)" onclick="toggleAnswer(<%= q.id %>)" style="color:#323232;font-size:16px;font-weight:bold;text-decoration:none;">
+                <%= q.title %>
+              </a>
+            </div>
+            <p style="color:#646464;font-size:14px;line-height:1.6;margin:0 0 10px 0;"><%= (q.content || '').substring(0, 200) %><%= (q.content || '').length > 200 ? '...' : '' %></p>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#959595;">
+              <div>
+                <% if (q.tags) { %>
+                  <% q.tags.split('|').forEach(function(tag) { %>
+                    <span style="background:#f0f0f0;padding:2px 10px;border-radius:15px;margin-right:5px;"><%= tag %></span>
+                  <% }) %>
+                <% } %>
+              </div>
+              <div>
+                <span style="margin-right:15px;">👁️ <%= q.views %></span>
+                <span>💬 <%= q.answer_count || q.answers || 0 %> 回答</span>
+              </div>
+            </div>
+            <!-- Answers (hidden by default) -->
+            <div id="answer_<%= q.id %>" class="answers-section" style="display:none;margin-top:15px;padding-top:15px;border-top:1px dashed #ddd;">
+              <p style="color:#888;font-size:13px;">回答加载中...</p>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Sidebar -->
+      <div>
+        <div style="border:2px solid #efefef;border-radius:4px;margin-bottom:20px;">
+          <div style="padding:10px;background:#fafafa;border-bottom:1px solid #efefef;">
+            <span style="font-size:15px;color:#767676;">❓ 热门问题</span>
+          </div>
+          <div style="padding:15px;">
+            <ol style="margin:0;padding-left:18px;color:#686868;line-height:2.2;font-size:14px;">
+              <% questions.slice(0, 5).forEach(function(q) { %>
+                <li><a href="javascript:void(0)" onclick="toggleAnswer(<%= q.id %>)" style="color:#323232;"><%= q.title.substring(0, 25) %><%= q.title.length > 25 ? '...' : '' %></a></li>
+              <% }) %>
+            </ol>
+          </div>
+        </div>
+        <div style="background:#f9f9f9;border:1px solid #efefef;border-radius:4px;padding:20px;text-align:center;">
+          <p style="color:#666;font-size:14px;">还没有找到答案？</p>
+          <p style="color:#959595;font-size:13px;">请联系我们的在线客服，专业顾问为您解答</p>
+          <a href="/kefu" style="display:inline-block;padding:10px 30px;background:#59b200;color:#fff;border-radius:4px;text-decoration:none;margin-top:10px;">💬 联系客服</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Store loaded answers
+  const answersCache = {};
+
+  async function toggleAnswer(questionId) {
+    const section = document.getElementById('answer_' + questionId);
+    if (section.style.display === 'block') {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = 'block';
+
+    if (answersCache[questionId]) {
+      renderAnswers(section, answersCache[questionId]);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/questions/' + questionId);
+      const data = await res.json();
+      if (data.success) {
+        answersCache[questionId] = data.data.answers || [];
+        renderAnswers(section, answersCache[questionId]);
+      }
+    } catch (e) {
+      section.innerHTML = '<p style="color:#999;font-size:13px;">加载失败，请稍后重试</p>';
+    }
+  }
+
+  function renderAnswers(section, answers) {
+    if (!answers || answers.length === 0) {
+      section.innerHTML = '<p style="color:#999;font-size:13px;">暂无回答，等待专业人士解答...</p>';
+      return;
+    }
+    let html = '';
+    answers.forEach(a => {
+      html += `
+        <div style="margin-bottom:15px;padding:12px;background:#f9f9f9;border-radius:4px;">
+          <div style="font-size:13px;color:#888;margin-bottom:5px;">
+            <strong style="color:#333;">${a.author}</strong> · ${new Date(a.created_at).toLocaleDateString()}
+          </div>
+          <p style="margin:0;color:#555;font-size:14px;line-height:1.6;">${a.content}</p>
+          <div style="margin-top:8px;font-size:12px;color:#999;">❤️ ${a.likes || 0} 有用</div>
+        </div>`;
+    });
+    section.innerHTML = html;
+  }
+</script>
+
+<%- include('partials/footer') %>

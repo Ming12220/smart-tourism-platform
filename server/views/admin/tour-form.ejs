@@ -1,0 +1,133 @@
+<% let path='/admin/tours'; let title='<%= tour ? "编辑" : "新增" %>线路 - 智慧旅游'; %>
+<%- include('../partials/header', { path, title }) %>
+
+<style>
+  .admin-layout { display:flex; min-height:calc(100vh - 60px); }
+  .admin-sidebar { width:220px; background:#2c3e50; color:#fff; padding:20px 0; flex-shrink:0; }
+  .admin-sidebar a { display:block; padding:12px 20px; color:#bdc3c7; text-decoration:none; font-size:14px; }
+  .admin-sidebar a:hover, .admin-sidebar a.active { background:#34495e; color:#fff; }
+  .admin-sidebar a .icon { margin-right:8px; }
+  .admin-main { flex:1; padding:25px; background:#f5f6fa; }
+  .form-card { background:#fff; border-radius:8px; padding:30px; max-width:800px; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+  .form-group { margin-bottom:20px; }
+  .form-group label { display:block; margin-bottom:5px; color:#555; font-size:14px; font-weight:bold; }
+  .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px; border:1px solid #ddd; border-radius:4px; font-size:14px; }
+  .form-group textarea { resize:vertical; min-height:80px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+  .form-check { display:flex; gap:20px; align-items:center; }
+  .form-check label { font-weight:normal; display:flex; align-items:center; gap:5px; }
+  .form-check input[type="checkbox"] { width:auto; }
+  .btn-save { padding:12px 40px; background:#59b200; color:#fff; border:none; border-radius:4px; font-size:16px; cursor:pointer; }
+</style>
+
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <div style="padding:15px 20px;border-bottom:1px solid #34495e;margin-bottom:10px;">
+      <strong style="font-size:16px;">⚙️ 管理面板</strong>
+    </div>
+    <a href="/admin"><span class="icon">📊</span> 概览</a>
+    <a href="/admin/tours" class="active"><span class="icon">🏝️</span> 线路管理</a>
+    <a href="/admin/questions"><span class="icon">❓</span> 问答管理</a>
+    <a href="/admin/users"><span class="icon">👥</span> 用户管理</a>
+    <a href="/admin/contacts"><span class="icon">📬</span> 留言管理</a>
+    <a href="/admin/bookings"><span class="icon">📋</span> 订单管理</a>
+    <a href="/" style="margin-top:30px;border-top:1px solid #34495e;padding-top:15px;"><span class="icon">🏠</span> 返回前台</a>
+  </div>
+  <div class="admin-main">
+    <h2 style="color:#2c3e50;margin:0 0 20px;"><%= tour ? '✏️ 编辑线路' : '➕ 新增线路' %></h2>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div style="background:#f8d7da;color:#721c24;padding:10px;border-radius:4px;margin-bottom:20px;"><%= error %></div>
+    <% } %>
+
+    <div class="form-card">
+      <form method="POST" action="/admin/tours/save" enctype="multipart/form-data">
+        <% if (tour) { %><input type="hidden" name="id" value="<%= tour.id %>"><% } %>
+
+        <div class="form-group">
+          <label>线路标题 *</label>
+          <input type="text" name="title" required value="<%= tour ? tour.title : '' %>" placeholder="如：<曼谷-芭提雅6日游>">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>分类</label>
+            <select name="category_id">
+              <% categories.forEach(function(c) { %>
+                <option value="<%= c.id %>" <%= tour && tour.category_id == c.id ? 'selected' : '' %>><%= c.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>类型标签</label>
+            <input type="text" name="type_label" value="<%= tour ? tour.type_label : '' %>" placeholder="如：国内长线">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>描述</label>
+          <textarea name="description"><%= tour ? tour.description : '' %></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>价格 *</label>
+            <input type="number" name="price" required step="0.01" value="<%= tour ? tour.price : '' %>">
+          </div>
+          <div class="form-group">
+            <label>原价</label>
+            <input type="number" name="original_price" step="0.01" value="<%= tour ? tour.original_price : '' %>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>满意度</label>
+            <input type="text" name="satisfaction" value="<%= tour ? tour.satisfaction : '0%' %>" placeholder="如：97%">
+          </div>
+          <div class="form-group">
+            <label>行程天数</label>
+            <input type="text" name="days" value="<%= tour ? tour.days : '' %>" placeholder="如：6天5晚">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>交通方式</label>
+          <input type="text" name="transport" value="<%= tour ? tour.transport : '' %>" placeholder="如：春秋航班，杭州出发">
+        </div>
+
+        <div class="form-group">
+          <label>行程亮点（用 | 分隔）</label>
+          <input type="text" name="highlights" value="<%= tour ? tour.highlights : '' %>" placeholder="如：大皇宫|玉佛寺|芭提雅">
+        </div>
+
+        <div class="form-group">
+          <label>参考路线</label>
+          <input type="text" name="route" value="<%= tour ? tour.route : '' %>" placeholder="如：杭州-曼谷-芭提雅-杭州">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>线路图片</label>
+            <input type="file" name="image" accept="image/*">
+            <% if (tour) { %><p style="font-size:12px;color:#888;margin:5px 0;">当前：<%= tour.image %>（不选则保持原图）</p><% } %>
+          </div>
+          <div class="form-group">
+            <label>特价截止日期</label>
+            <input type="date" name="promotion_end" value="<%= tour ? tour.promotion_end : '' %>">
+          </div>
+        </div>
+
+        <div class="form-check" style="margin-bottom:25px;">
+          <label><input type="checkbox" name="is_hot" value="1" <%= tour && tour.is_hot ? 'checked' : '' %>> 🔥 热门推荐</label>
+          <label><input type="checkbox" name="is_promotion" value="1" <%= tour && tour.is_promotion ? 'checked' : '' %>> 💰 限时特价</label>
+        </div>
+
+        <button type="submit" class="btn-save">💾 保存</button>
+        <a href="/admin/tours" style="margin-left:15px;color:#888;text-decoration:none;">取消</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

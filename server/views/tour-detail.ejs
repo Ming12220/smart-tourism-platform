@@ -1,0 +1,189 @@
+<% let path='/tour'; let title='线路详情 - 智慧旅游'; %>
+<%- include('partials/header', { path, title }) %>
+
+<div style="padding-top:60px;max-width:1400px;margin:0 auto;padding-left:15px;padding-right:15px;">
+  <!-- Breadcrumb -->
+  <div style="font-size:14px;color:#888;padding:15px 0;border-bottom:1px solid #eee;">
+    <a href="/" style="color:#888;">首页</a> &gt;
+    <a href="/zmzg" style="color:#888;">旅游线路</a> &gt;
+    <span style="color:#333;"><%= tour.title %></span>
+  </div>
+
+  <!-- Tour Header -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:30px 0;">
+    <!-- Image -->
+    <div style="border-radius:8px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+      <img src="/img/<%= tour.image %>" alt="<%= tour.title %>" style="width:100%;height:400px;object-fit:cover;">
+    </div>
+
+    <!-- Info -->
+    <div>
+      <h1 style="color:#333;font-size:24px;margin:0 0 10px;"><%= tour.title %></h1>
+      <div style="display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap;">
+        <span style="background:#59b200;color:#fff;padding:3px 12px;border-radius:4px;font-size:13px;"><%= tour.type_label %></span>
+        <span style="color:#888;font-size:13px;">🗓️ <%= tour.days %></span>
+        <span style="color:#888;font-size:13px;">⭐ 满意度 <%= tour.satisfaction %></span>
+        <% if (tour.is_hot) { %><span style="color:#ff6b35;font-size:13px;">🔥 热门推荐</span><% } %>
+      </div>
+
+      <div style="background:#f9f9f9;border-radius:8px;padding:20px;margin-bottom:20px;">
+        <p style="color:#666;font-size:15px;line-height:1.8;margin:0;"><%= tour.description %></p>
+      </div>
+
+      <!-- Price -->
+      <div style="background:linear-gradient(135deg,#fff5f5,#fff);border:2px solid #ffebee;border-radius:8px;padding:20px;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <span style="color:#888;font-size:14px;">优惠价</span>
+            <div style="color:#ff6600;font-size:36px;font-weight:bold;">¥<%= tour.price %><span style="font-size:16px;color:#999;font-weight:normal;">/位</span></div>
+            <% if (tour.original_price && tour.original_price > tour.price) { %>
+              <span style="color:#bbb;font-size:14px;text-decoration:line-through;">原价 ¥<%= tour.original_price %></span>
+              <span style="background:#ff6600;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;margin-left:8px;">
+                省 ¥<%= (tour.original_price - tour.price).toFixed(0) %>
+              </span>
+            <% } %>
+          </div>
+          <a href="/book/<%= tour.id %>"
+             style="padding:15px 40px;background:linear-gradient(135deg,#ff6600,#ff4500);color:#fff;border:none;border-radius:8px;font-size:18px;text-decoration:none;font-weight:bold;box-shadow:0 4px 15px rgba(255,102,0,0.3);display:inline-block;">
+            📅 立即预订
+          </a>
+        </div>
+        <p style="color:#999;font-size:13px;margin:10px 0 0;">儿童价（<%= (tour.price * 0.6).toFixed(0) %>元/位）按成人价60%计算</p>
+      </div>
+
+      <!-- Highlights -->
+      <div style="margin-bottom:20px;">
+        <h3 style="color:#333;font-size:16px;margin:0 0 10px;">✨ 行程亮点</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <% if (tour.highlights) { %>
+            <% tour.highlights.split('|').forEach(function(h) { %>
+              <span style="background:#e8f5e9;color:#2e7d32;padding:5px 15px;border-radius:20px;font-size:13px;">🏆 <%= h.trim() %></span>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tour Details -->
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:30px;margin:30px 0;">
+    <div>
+      <!-- Route -->
+      <div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:25px;margin-bottom:20px;">
+        <h3 style="color:#333;margin:0 0 15px;">🗺️ 参考行程</h3>
+        <% if (tour.route) { %>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <% tour.route.split('-').forEach(function(r, i) { %>
+              <span style="background:<%= i % 2 === 0 ? '#e3f2fd' : '#fff3e0' %>;padding:8px 16px;border-radius:20px;font-size:14px;color:#333;"><%= r.trim() %></span>
+              <% if (i < tour.route.split('-').length - 1) { %><span style="color:#ccc;">→</span><% } %>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p style="color:#888;">暂无详细行程</p>
+        <% } %>
+      </div>
+
+      <!-- Transport -->
+      <div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:25px;margin-bottom:20px;">
+        <h3 style="color:#333;margin:0 0 15px;">🚌 交通信息</h3>
+        <p style="color:#666;font-size:15px;"><%= tour.transport || '待定' %></p>
+        <h3 style="color:#333;margin:20px 0 15px;">📅 出团日期</h3>
+        <p style="color:#666;font-size:15px;"><%= tour.days || '待定' %></p>
+      </div>
+
+      <!-- Reviews -->
+      <div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:25px;">
+        <h3 style="color:#333;margin:0 0 15px;">💬 用户评价</h3>
+        <% if (reviews.length === 0) { %>
+          <p style="color:#999;text-align:center;padding:20px;">暂无评价，快来成为第一个评价的用户吧！</p>
+        <% } %>
+        <% reviews.forEach(function(r) { %>
+          <div style="border-bottom:1px solid #eee;padding:15px 0;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#888;margin-bottom:5px;">
+              <span><%= r.username %> <span style="color:#ffa000;"><%= '⭐'.repeat(r.rating || 5) %></span></span>
+              <span><%= new Date(r.created_at).toLocaleDateString() %></span>
+            </div>
+            <p style="color:#555;font-size:14px;margin:0;"><%= r.content %></p>
+          </div>
+        <% }) %>
+
+        <!-- Review Form -->
+        <% if (user) { %>
+          <div style="margin-top:20px;">
+            <h4 style="color:#333;font-size:14px;margin:0 0 10px;">发表评价</h4>
+            <form id="reviewForm" onsubmit="event.preventDefault(); submitReview()">
+              <input type="hidden" name="tour_id" value="<%= tour.id %>">
+              <div style="margin-bottom:10px;">
+                <select name="rating" style="padding:6px;border:1px solid #ddd;border-radius:4px;">
+                  <option value="5">⭐⭐⭐⭐⭐</option>
+                  <option value="4">⭐⭐⭐⭐</option>
+                  <option value="3">⭐⭐⭐</option>
+                  <option value="2">⭐⭐</option>
+                  <option value="1">⭐</option>
+                </select>
+              </div>
+              <textarea name="content" placeholder="分享您的旅行体验..." required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;min-height:80px;resize:vertical;"></textarea>
+              <button type="submit" style="margin-top:10px;padding:8px 25px;background:#59b200;color:#fff;border:none;border-radius:4px;cursor:pointer;">提交评价</button>
+            </form>
+            <p id="reviewMsg" style="display:none;color:#59b200;font-size:14px;margin-top:10px;"></p>
+          </div>
+        <% } else { %>
+          <p style="color:#888;font-size:13px;text-align:center;margin-top:20px;">
+            <a href="/login" style="color:#59b200;">登录</a>后可以发表评价
+          </p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div style="background:#fff;border:2px solid #ff6600;border-radius:8px;padding:25px;position:sticky;top:80px;">
+        <h3 style="color:#333;margin:0 0 15px;text-align:center;">📋 预订信息</h3>
+        <div style="text-align:center;margin-bottom:15px;">
+          <div style="color:#ff6600;font-size:32px;font-weight:bold;">¥<%= tour.price %></div>
+          <div style="color:#888;font-size:13px;">/位起</div>
+        </div>
+        <div style="border-top:1px dashed #eee;padding-top:15px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;color:#666;">
+            <span>行程天数</span><span><strong><%= tour.days || '待定' %></strong></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;color:#666;">
+            <span>满意度</span><span><strong><%= tour.satisfaction %></strong></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;color:#666;">
+            <span>儿童价</span><span><strong><%= (tour.price * 0.6).toFixed(0) %>元</strong></span>
+          </div>
+          <% if (tour.is_promotion) { %>
+            <div style="background:#fff3e0;padding:10px;border-radius:4px;text-align:center;font-size:13px;color:#e65100;margin:10px 0;">
+              ⏰ 限时特价至 <%= tour.promotion_end || '长期有效' %>
+            </div>
+          <% } %>
+        </div>
+        <a href="/book/<%= tour.id %>" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#ff6600,#ff4500);color:#fff;border-radius:6px;font-size:16px;font-weight:bold;text-decoration:none;margin-top:15px;box-shadow:0 4px 10px rgba(255,102,0,0.2);">
+          🚀 立即预订
+        </a>
+        <p style="text-align:center;color:#999;font-size:12px;margin-top:10px;">免费咨询：400-888-9999</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function submitReview() {
+    const form = document.getElementById('reviewForm');
+    const data = { tour_id: <%= tour.id %>, rating: form.rating.value, content: form.content.value };
+    const res = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    const msg = document.getElementById('reviewMsg');
+    msg.textContent = '✅ 评价提交成功！';
+    msg.style.display = 'block';
+    form.content.value = '';
+    setTimeout(() => { location.reload(); }, 1500);
+  }
+</script>
+
+<%- include('partials/footer') %>

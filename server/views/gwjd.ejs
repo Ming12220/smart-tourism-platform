@@ -1,0 +1,194 @@
+<% let path='/gwjd'; let title='国外景点 - 智慧旅游'; %>
+<%- include('partials/header', { path, title }) %>
+
+<style>
+  .gwjd-page { padding-top:60px; max-width:1400px; margin:0 auto; padding-left:15px; padding-right:15px; }
+  .gwjd-page h1 { color:#2c3e50; font-size:28px; border-bottom:2px solid #59b200; padding-bottom:15px; margin-bottom:5px; }
+  .gwjd-page .subtitle { color:#95a5a6; font-size:14px; margin-top:0; margin-bottom:25px; }
+
+  .section-title {
+    text-align: center;
+    padding: 40px 15px 10px;
+    position: relative;
+  }
+  .section-title h2 { font-size: 28px; color: #2c3e50; margin: 0; font-weight: 700; }
+  .section-title p { color: #95a5a6; font-size: 14px; margin: 8px 0 0; }
+  .section-title::after {
+    content: '';
+    display: block;
+    width: 50px; height: 3px;
+    background: linear-gradient(90deg, #59b200, #ff6600);
+    margin: 12px auto 0;
+    border-radius: 2px;
+  }
+
+  .dest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+    gap: 16px;
+    padding-bottom: 30px;
+  }
+  .dest-card {
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 20px 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+  .dest-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-color: #ff6600;
+  }
+  .dest-card .emoji { font-size: 36px; margin-bottom: 6px; display: block; }
+  .dest-card .name { font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 4px; }
+  .dest-card .tags { font-size: 12px; color: #95a5a6; }
+
+  .tour-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px; }
+  .tour-card {
+    border:1px solid #eee; border-radius:12px; overflow:hidden; background:#fff;
+    transition:all 0.3s; text-decoration:none; color:inherit; display:block;
+  }
+  .tour-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.1); }
+  .tour-card img { width:100%; height:200px; object-fit:cover; transition:transform 0.5s; }
+  .tour-card:hover img { transform:scale(1.05); }
+  .tour-card .info { padding:14px; }
+  .tour-card .info h3 { font-size:15px; color:#2c3e50; margin:0 0 6px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tour-card .info p { color:#7f8c8d; font-size:13px; margin:0 0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tour-card .info .price { color:#ff6600; font-size:18px; font-weight:bold; }
+  .tour-card .info .satis { color:#95a5a6; font-size:12px; }
+
+  .sidebar-card { border:1px solid #efefef; border-radius:8px; background:#fff; margin-bottom:20px; }
+  .sidebar-card .head { padding:10px; background:#fafafa; border-bottom:1px solid #efefef; display:flex; justify-content:space-between; font-size:15px; color:#767676; }
+  .sidebar-card .body { padding:10px; }
+
+  @media (max-width: 768px) {
+    .gwjd-page .page-layout { grid-template-columns:1fr; }
+    .tour-grid { grid-template-columns:1fr; }
+    .dest-grid { grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); }
+  }
+</style>
+
+<div class="gwjd-page">
+  <h1>🌏 国外景点</h1>
+  <p class="subtitle">全球热门旅游目的地，开启您的世界之旅</p>
+
+  <!-- ====== 全球热门目的地 ====== -->
+  <div class="section-title" style="padding-top:10px;">
+    <h2>📍 全球热门目的地</h2>
+    <p>点击卡片查看详细线路和价格</p>
+  </div>
+
+  <div class="dest-grid">
+    <% var destinations = [
+      {name:'泰国 · 曼谷芭提雅', emoji:'🇹🇭', tourId:1, desc:'大皇宫·人妖秀·泰式按摩'},
+      {name:'马尔代夫 · 双鱼岛', emoji:'🇲🇻', tourId:2, desc:'潜水·海上日落·水屋'},
+      {name:'日本 · 东京富士山', emoji:'🇯🇵', tourId:4, desc:'温泉·樱花·迪士尼'},
+      {name:'巴厘岛 · 蜜月天堂', emoji:'🇮🇩', tourId:6, desc:'海滩·SPA·悬崖酒吧'},
+      {name:'土耳其 · 热气球', emoji:'🇹🇷', tourId:8, desc:'棉花堡·卡帕多奇亚'},
+      {name:'法国 · 浪漫巴黎', emoji:'🇫🇷', tourId:5, desc:'铁塔·卢浮宫·塞纳河'},
+      {name:'瑞士 · 阿尔卑斯山', emoji:'🇨🇭', tourId:5, desc:'少女峰·金色列车'},
+      {name:'意大利 · 古罗马', emoji:'🇮🇹', tourId:5, desc:'斗兽场·威尼斯·教堂'},
+      {name:'迪拜 · 奢华之都', emoji:'🇦🇪', tourId:7, desc:'哈利法塔·棕榈岛'},
+      {name:'塞舌尔 · 天堂群岛', emoji:'🇸🇨', tourId:7, desc:'海滩·浮潜·象龟'},
+    ]; %>
+    <% destinations.forEach(function(d) { %>
+      <a href="/tour/<%= d.tourId %>" class="dest-card">
+        <span class="emoji"><%= d.emoji %></span>
+        <div class="name"><%= d.name %></div>
+        <div class="tags"><%= d.desc %></div>
+      </a>
+    <% }) %>
+  </div>
+
+  <!-- ====== 线路列表 + 侧边栏 ====== -->
+  <div class="page-layout" style="display:grid;grid-template-columns:2fr 1fr;gap:30px;margin-top:10px;">
+
+    <!-- 左侧线路列表 -->
+    <div>
+      <h2 style="color:#2c3e50;font-size:20px;margin:0 0 5px;">✈️ 精选国外线路</h2>
+      <p style="color:#95a5a6;font-size:13px;margin:0 0 15px;">以下是我们为您精选的出境游线路</p>
+      <div class="tour-grid">
+        <% tours.forEach(function(t) { %>
+          <a href="/tour/<%= t.id %>" class="tour-card">
+            <div style="overflow:hidden;">
+              <img src="/img/<%= t.image %>" alt="<%= t.title %>">
+            </div>
+            <div class="info">
+              <h3><%= t.title %></h3>
+              <p><%= (t.description || '').substring(0, 50) %></p>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="price">¥<%= t.price %> 起</span>
+                <span class="satis">⭐ <%= t.satisfaction %></span>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- 侧边栏 -->
+    <div>
+      <div class="sidebar-card">
+        <div class="head"><span>🌍 快速导航</span></div>
+        <div class="body">
+          <table style="width:100%;">
+            <% var navs = [
+              [{name:'🇹🇭 泰国 · 曼谷', id:1, bg:'#fff8e1', color:'#e65100'},{name:'🇯🇵 日本 · 东京', id:4, bg:'#e8f5e9', color:'#2e7d32'}],
+              [{name:'🇮🇩 巴厘岛 · 蜜月', id:6, bg:'#e3f2fd', color:'#1565c0'},{name:'🇲🇻 马尔代夫', id:2, bg:'#fce4ec', color:'#c62828'}],
+              [{name:'🇫🇷 法国 · 巴黎', id:5, bg:'#f3e5f5', color:'#6a1b9a'},{name:'🇨🇭 瑞士 · 雪山', id:5, bg:'#e0f7fa', color:'#006064'}],
+              [{name:'🇹🇷 土耳其 · 热气球', id:8, bg:'#fff3e0', color:'#e65100'},{name:'🇦🇪 迪拜 · 奢华', id:7, bg:'#e8eaf6', color:'#283593'}],
+              [{name:'🇮🇹 意大利 · 罗马', id:5, bg:'#fbe9e7', color:'#bf360c'},{name:'🇸🇨 塞舌尔 · 海岛', id:7, bg:'#e0f2f1', color:'#004d40'}],
+            ]; %>
+            <% navs.forEach(function(row) { %>
+              <tr>
+                <% row.forEach(function(cell) { %>
+                  <td style="padding:8px;background:<%= cell.bg %>;font-size:13px;color:<%= cell.color %>;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/<%= cell.id %>'"><%= cell.name %></td>
+                <% }) %>
+              </tr>
+            <% }) %>
+          </table>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="head"><span>📷 世界风光</span></div>
+        <div class="body" style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+          <% var spots = [
+            {img:'s3.jpg', name:'泰国水上市场', id:1},
+            {img:'s4.jpg', name:'日本富士山', id:4},
+            {img:'s5.jpg', name:'巴黎铁塔', id:5},
+            {img:'s6.jpg', name:'马尔代夫', id:2},
+            {img:'s7.jpg', name:'瑞士雪山', id:5},
+            {img:'s8.jpg', name:'巴厘岛日落', id:6}
+          ]; %>
+          <% spots.forEach(function(s) { %>
+            <div style="text-align:center;position:relative;cursor:pointer;" onclick="location.href='/tour/<%= s.id %>'">
+              <img src="/img/<%= s.img %>" alt="<%= s.name %>" style="width:100%;height:80px;object-fit:cover;border-radius:4px;">
+              <span style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.5);color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;"><%= s.name %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div style="background:#f9f9f9;border:1px solid #efefef;border-radius:8px;padding:20px;text-align:center;">
+        <h3 style="color:#333;font-size:16px;margin:0 0 10px;">💼 签证服务</h3>
+        <p style="color:#959595;font-size:13px;">专业签证办理服务，出签率高</p>
+        <div style="text-align:left;font-size:13px;color:#666;margin:10px 0;line-height:1.8;">
+          <p>✅ 泰国落地签 · 说走就走</p>
+          <p>✅ 日本单次/多次签证</p>
+          <p>✅ 申根签证 · 畅游欧洲</p>
+          <p>✅ 美国B1/B2十年签</p>
+          <p>✅ 马尔代夫免签</p>
+        </div>
+        <a href="/kefu" style="display:inline-block;padding:8px 25px;background:#59b200;color:#fff;border-radius:4px;text-decoration:none;margin-top:5px;">💬 咨询客服</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
