@@ -1,4 +1,4 @@
-<% let path='/kefu'; let title='客服中心 - 智慧旅游'; %>
+<% let path='/kefu'; let title=__('site.title.kefu'); %>
 <%- include('partials/header', { path, title }) %>
 
 <style>
@@ -67,8 +67,8 @@
 </style>
 
 <div class="kefu-page">
-  <h1>💬 客服中心</h1>
-  <p style="color:#95a5a6;font-size:14px;margin-top:5px;margin-bottom:25px;">专业旅游顾问在线为您服务</p>
+  <h1>💬 <%= __("kefu.title") %></h1>
+  <p style="color:#95a5a6;font-size:14px;margin-top:5px;margin-bottom:25px;"><%= __("kefu.tagline") %></p>
 
   <div class="kefu-layout" style="display:grid;grid-template-columns:1.5fr 1fr;gap:25px;">
 
@@ -77,22 +77,22 @@
       <div class="chat-box" id="chatBox">
         <div class="chat-header">
           <div>
-            <h3>🤖 智慧旅游客服</h3>
-            <div class="status"><span class="dot"></span>在线 · 通常秒回</div>
+            <h3>🤖 <%= __("kefu.chatTitle") %></h3>
+            <div class="status"><span class="dot"></span><%= __("kefu.chatOnline") %></div>
           </div>
-          <div style="font-size:12px;opacity:0.8;">工号 1001</div>
+          <div style="font-size:12px;opacity:0.8;"><%= __("kefu.chatId") %></div>
         </div>
 
         <div class="chat-msgs" id="chatMsgs">
           <div class="msg robot">
             <div>
-              <div class="bubble">👋 您好！欢迎来到智慧旅游服务平台，我是您的专属旅游顾问小智。</div>
+              <div class="bubble"><%= __("kefu.welcome1") %></div>
               <div class="time">刚刚</div>
             </div>
           </div>
           <div class="msg robot">
             <div>
-              <div class="bubble">请问有什么可以帮您的？您可以点击下方问题快速咨询，或直接输入您的问题。</div>
+              <div class="bubble"><%= __("kefu.welcome2") %></div>
               <div class="time">刚刚</div>
             </div>
           </div>
@@ -101,14 +101,14 @@
         <div class="chat-input">
           <div style="width:100%;">
             <div style="display:flex;">
-              <input type="text" id="chatInput" placeholder="输入您的问题..." onkeydown="if(event.key==='Enter') sendMsg()">
-              <button onclick="sendMsg()">发送</button>
+              <input type="text" id="chatInput" placeholder="<%= __("kefu.inputPlaceholder") %>" onkeydown="if(event.key==='Enter') sendMsg()">
+              <button onclick="sendMsg()"><%= __("kefu.send") %></button>
             </div>
             <div class="quick-btns">
-              <button onclick="quickAsk('有哪些热门线路？')">🔥 热门线路</button>
-              <button onclick="quickAsk('怎么预订？')">📋 如何预订</button>
+              <button onclick="quickAsk('有哪些热门线路？')"><%= __("kefu.quickHot") %></button>
+              <button onclick="quickAsk('怎么预订？')"><%= __("kefu.quickBook") %></button>
               <button onclick="quickAsk('签证怎么办？')">🛂 签证问题</button>
-              <button onclick="quickAsk('有优惠吗？')">💰 最新优惠</button>
+              <button onclick="quickAsk('有优惠吗？')"><%= __("kefu.quickPromo") %></button>
             </div>
           </div>
         </div>
@@ -119,7 +119,7 @@
     <div>
       <!-- 联系方式 -->
       <div class="info-card">
-        <h3>📞 联系方式</h3>
+        <h3>📞 <%= __("kefu.contactTitle") %></h3>
         <p><strong>客服热线：</strong><a href="tel:4008889999" style="color:#ff6600;font-size:18px;font-weight:bold;text-decoration:none;">400-888-9999</a></p>
         <p><strong>服务时间：</strong>周一至周日 9:00 - 21:00</p>
         <p><strong>邮箱：</strong><a href="mailto:service@smart-tourism.com" style="color:#59b200;text-decoration:none;">service@smart-tourism.com</a></p>
@@ -128,10 +128,10 @@
 
       <!-- 签证服务 -->
       <div class="info-card">
-        <h3>🛂 签证服务专区</h3>
+        <h3><%= __("kefu.quickVisaService") %>专区</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="background:#fff8e1;padding:10px;border-radius:6px;text-align:center;font-size:13px;color:#e65100;">🇹🇭 泰国落地签</div>
-          <div style="background:#e8f5e9;padding:10px;border-radius:6px;text-align:center;font-size:13px;color:#2e7d32;">🇯🇵 日本签证</div>
+          <div style="background:#fff8e1;padding:10px;border-radius:6px;text-align:center;font-size:13px;color:#e65100;"><%= __("kefu.quickVisa") %></div>
+          <div style="background:#e8f5e9;padding:10px;border-radius:6px;text-align:center;font-size:13px;color:#2e7d32;"><%= __("kefu.quickJapanVisa") %></div>
           <div style="background:#e3f2fd;padding:10px;border-radius:6px;text-align:center;font-size:13px;color:#1565c0;">🇪🇺 申根签证</div>
           <div style="background:#fce4ec;padding:10px;border-radius:6px;text-align:center;font-size:13px;color:#c62828;">🇺🇸 美国签证</div>
           <div style="background:#f3e5f5;padding:10px;border-radius:6px;text-align:center;font-size:13px;color:#6a1b9a;">🇦🇺 澳洲签证</div>
@@ -142,7 +142,7 @@
 
       <!-- 热门问答 -->
       <div class="info-card">
-        <h3>❓ 常见问题</h3>
+        <h3>❓ <%= __("kefu.faqTitle") %></h3>
         <% questions.forEach(function(q) { %>
           <p style="font-size:13px;margin:6px 0;padding:6px 10px;background:#f9f9f9;border-radius:4px;">
             <a href="/lywd" style="color:#333;text-decoration:none;"><%= q.title %></a>
@@ -152,12 +152,12 @@
 
       <!-- 在线留言 -->
       <div class="info-card">
-        <h3>✉️ 在线留言</h3>
+        <h3>✉️ <%= __("kefu.messageTitle") %></h3>
         <form id="kefuContact" onsubmit="event.preventDefault(); submitKefu()">
-          <input type="text" name="name" placeholder="您的姓名" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-bottom:8px;font-size:13px;">
-          <input type="tel" name="phone" placeholder="联系电话" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-bottom:8px;font-size:13px;">
-          <textarea name="message" placeholder="留言内容..." rows="3" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-bottom:8px;font-size:13px;resize:vertical;"></textarea>
-          <button type="submit" style="width:100%;padding:10px;background:#59b200;color:#fff;border:none;border-radius:4px;font-size:14px;cursor:pointer;">提交留言</button>
+          <input type="text" name="name" placeholder="<%= __("kefu.messageName") %>" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-bottom:8px;font-size:13px;">
+          <input type="tel" name="phone" placeholder="<%= __("kefu.messagePhone") %>" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-bottom:8px;font-size:13px;">
+          <textarea name="message" placeholder="<%= __("kefu.messageContent") %>" rows="3" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-bottom:8px;font-size:13px;resize:vertical;"></textarea>
+          <button type="submit" style="width:100%;padding:10px;background:#59b200;color:#fff;border:none;border-radius:4px;font-size:14px;cursor:pointer;"><%= __("kefu.messageSubmit") %></button>
         </form>
         <p id="kefuMsg" style="display:none;text-align:center;color:#59b200;font-size:13px;margin-top:8px;"></p>
       </div>
@@ -168,21 +168,6 @@
 <script>
   const chatMsgs = document.getElementById('chatMsgs');
   const chatInput = document.getElementById('chatInput');
-
-  // 自动回复库
-  const replies = {
-    '热门': '🔥 我们的热门线路包括：黄山¥1299、九寨沟¥2280、三亚¥1680、丽江¥1880、张家界¥1480！<br>点击 <a href="/" style="color:#59b200;">首页</a> 查看全部线路 👈',
-    '线路': '🔥 我们的热门线路包括：黄山¥1299、九寨沟¥2280、三亚¥1680、丽江¥1880、张家界¥1480！<br>点击 <a href="/" style="color:#59b200;">首页</a> 查看全部线路 👈',
-    '预订': '📋 预订非常简单：<br>1️⃣ 浏览线路 → 点击"立即预订"<br>2️⃣ 选择出行日期和人数<br>3️⃣ 填写联系信息并提交<br>4️⃣ 客服将在2小时内与您确认<br>或直接拨打 400-888-9999 📞',
-    '怎么订': '📋 预订非常简单：<br>1️⃣ 浏览线路 → 点击"立即预订"<br>2️⃣ 选择出行日期和人数<br>3️⃣ 填写联系信息并提交<br>4️⃣ 客服将在2小时内与您确认<br>或直接拨打 400-888-9999 📞',
-    '签证': '🛂 我们提供多国签证办理服务：<br>✅ 泰国落地签 · 说走就走<br>✅ 日本单次/多次签证 ¥300起<br>✅ 申根签证 · 畅游欧洲 ¥800起<br>✅ 美国B1/B2十年签 ¥1500起<br>详情可拨打 400-888-9999 咨询 📞',
-    '优惠': '💰 当前优惠活动：<br>🔥 限时特价线路低至5折！<br>🎉 两人同行，第二人减200<br>📅 提前30天预订再享9折<br>点击 <a href="/" style="color:#59b200;">首页</a> 查看特价线路 👈',
-    '价格': '💰 国内线路价格：<br>🏔️ 黄山 ¥1,299 | 🌊 九寨沟 ¥2,280<br>🏝️ 三亚 ¥1,680 | 🏯 丽江 ¥1,880<br>🏔️ 张家界 ¥1,480 | 🎋 桂林 ¥1,380<br>🛕 西安 ¥1,680 | 🌺 西双版纳 ¥2,080<br>🏘️ 乌镇 ¥980 | 🏰 故宫 ¥1,580<br>🏖️ 海南 ¥1,780',
-    '你好': '👋 您好！我是小智，很高兴为您服务！请问有什么可以帮您的？',
-    '在吗': '👋 在的呢！有什么可以帮您的吗？',
-    '谢谢': '😊 不客气！如果还有其他问题，随时找我哦～',
-    '客服': '📞 人工客服热线：<b>400-888-9999</b><br>服务时间：周一至周日 9:00-21:00<br>也可以在这里留言，我们会尽快回复您！',
-  };
 
   function addMsg(type, text) {
     const div = document.createElement('div');
@@ -200,14 +185,24 @@
     addMsg('user', text);
     chatInput.value = '';
 
-    // 找匹配回复
-    let reply = null;
-    for (const [key, val] of Object.entries(replies)) {
-      if (text.includes(key)) { reply = val; break; }
-    }
-    if (!reply) reply = '🤔 感谢您的咨询！<br>您也可以拨打客服热线 <b>400-888-9999</b> 或点击下方快捷问题<br>小智会尽快为您解答 😊';
+    addMsg('robot', '🤔 ' + document.querySelector('[id^=kefu]') ? '' : '');
 
-    setTimeout(() => addMsg('robot', reply), 500 + Math.random() * 500);
+    fetch('/api/faq', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.answer) {
+        addMsg('robot', data.answer);
+      } else {
+        addMsg('robot', '🤔 感谢您的咨询！您也可以拨打客服热线 400-888-9999 或点击下方快捷问题，小智会尽快为您解答 😊');
+      }
+    })
+    .catch(() => {
+      addMsg('robot', '🤔 感谢您的咨询！您也可以拨打客服热线 400-888-9999 或点击下方快捷问题，小智会尽快为您解答 😊');
+    });
   }
 
   function quickAsk(text) {

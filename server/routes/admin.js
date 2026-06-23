@@ -41,7 +41,7 @@ router.get('/', (req, res) => {
 router.get('/tours', (req, res) => {
   const db = getDb();
   const tours = db.prepare(`
-    SELECT t.*, c.name as category_name
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en
     FROM tours t LEFT JOIN categories c ON t.category_id = c.id
     ORDER BY t.created_at DESC
   `).all();
@@ -173,6 +173,30 @@ router.post('/bookings/status', (req, res) => {
   const db = getDb();
   db.prepare('UPDATE bookings SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(status, id);
   res.redirect('/admin/bookings');
+});
+
+// Knowledge base management
+router.get('/faq', (req, res) => {
+  const db = getDb();
+  const faqs = db.prepare('SELECT * FROM knowledge_base ORDER BY category, sort_order').all();
+  res.render('admin/faq', { user: req.session.user, faqs });
+});
+
+// Add FAQ
+router.post('/faq/add', (req, res) => {
+  const { keywords, question, answer, category, sort_order } = req.body;
+  const db = getDb();
+  db.prepare('INSERT INTO knowledge_base (keywords, question, answer, category, sort_order) VALUES (?, ?, ?, ?, ?)').run(
+    keywords, question, answer, category || 'general', parseInt(sort_order) || 0
+  );
+  res.redirect('/admin/faq');
+});
+
+// Delete FAQ
+router.get('/faq/delete/:id', (req, res) => {
+  const db = getDb();
+  db.prepare('DELETE FROM knowledge_base WHERE id = ?').run(req.params.id);
+  res.redirect('/admin/faq');
 });
 
 module.exports = router;

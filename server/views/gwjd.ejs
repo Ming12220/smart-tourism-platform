@@ -1,4 +1,4 @@
-<% let path='/gwjd'; let title='国外景点 - 智慧旅游'; %>
+<% let path='/gwjd'; let title=__('site.title.gwjd'); %>
 <%- include('partials/header', { path, title }) %>
 
 <style>
@@ -116,10 +116,10 @@
         <% tours.forEach(function(t) { %>
           <a href="/tour/<%= t.id %>" class="tour-card">
             <div style="overflow:hidden;">
-              <img src="/img/<%= t.image %>" alt="<%= t.title %>">
+              <img src="/img/<%= t.image %>" alt="<%= tt(t, 'title') %>">
             </div>
             <div class="info">
-              <h3><%= t.title %></h3>
+              <h3><%= tt(t, 'title') %></h3>
               <p><%= (t.description || '').substring(0, 50) %></p>
               <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span class="price">¥<%= t.price %> 起</span>
@@ -159,12 +159,12 @@
         <div class="head"><span>📷 世界风光</span></div>
         <div class="body" style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
           <% var spots = [
-            {img:'s3.jpg', name:'泰国水上市场', id:1},
-            {img:'s4.jpg', name:'日本富士山', id:4},
-            {img:'s5.jpg', name:'巴黎铁塔', id:5},
-            {img:'s6.jpg', name:'马尔代夫', id:2},
-            {img:'s7.jpg', name:'瑞士雪山', id:5},
-            {img:'s8.jpg', name:'巴厘岛日落', id:6}
+            {img:'t1.jpg', name:'泰国水上市场', id:1},
+            {img:'t4.jpg', name:'日本富士山', id:4},
+            {img:'t5a.jpg', name:'巴黎铁塔', id:5},
+            {img:'t2.jpg', name:'马尔代夫', id:2},
+            {img:'t5c.jpg', name:'瑞士雪山', id:5},
+            {img:'t6.jpg', name:'巴厘岛日落', id:6}
           ]; %>
           <% spots.forEach(function(s) { %>
             <div style="text-align:center;position:relative;cursor:pointer;" onclick="location.href='/tour/<%= s.id %>'">

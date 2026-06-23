@@ -1,0 +1,92 @@
+<% let path='/search'; let title=__('site.title.home'); %>
+<%- include('partials/header', { path, title }) %>
+
+<style>
+  .search-page { padding-top:60px; max-width:1400px; margin:0 auto; padding-left:15px; padding-right:15px; }
+  .search-page h1 { color:#2c3e50; font-size:24px; border-bottom:2px solid #59b200; padding-bottom:10px; }
+  .search-form { display:flex; max-width:600px; margin:20px 0; }
+  .search-form input { flex:1; padding:12px 18px; border:2px solid #e0e0e0; border-radius:30px 0 0 30px; font-size:15px; outline:none; }
+  .search-form input:focus { border-color:#59b200; }
+  .search-form button { padding:12px 30px; background:#59b200; color:#fff; border:none; border-radius:0 30px 30px 0; font-size:15px; cursor:pointer; }
+  .result-count { color:#888; font-size:14px; margin:10px 0 20px; }
+  .tour-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:20px; }
+  .tour-card { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.05); transition:0.3s; }
+  .tour-card:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,0,0,0.1); }
+  .tour-card .card-img { position:relative; height:200px; overflow:hidden; }
+  .tour-card .card-img img { width:100%; height:100%; object-fit:cover; }
+  .tour-card .card-img .tag { position:absolute; bottom:10px; left:10px; background:#59b200; color:#fff; padding:3px 12px; border-radius:4px; font-size:12px; }
+  .tour-card .card-body { padding:18px; }
+  .tour-card .card-body h3 { color:#2c3e50; font-size:16px; margin:0 0 8px; line-height:1.4; }
+  .tour-card .card-body .desc { color:#888; font-size:13px; margin:0 0 12px; line-height:1.6; }
+  .tour-card .card-body .meta { display:flex; justify-content:space-between; align-items:center; }
+  .tour-card .card-body .meta .price { color:#ff6600; font-size:15px; font-weight:bold; }
+  .tour-card .card-body .meta .rating { color:#f39c12; font-size:13px; }
+  .no-results { text-align:center; padding:80px 20px; color:#999; }
+  .no-results .big-icon { font-size:60px; margin-bottom:15px; }
+  .no-results p { font-size:16px; }
+  .question-list { margin-top:30px; }
+  .question-list h3 { color:#2c3e50; border-bottom:2px solid #59b200; padding-bottom:8px; }
+  .question-item { background:#fff; border:1px solid #eee; border-radius:8px; padding:15px; margin-top:10px; }
+  .question-item a { color:#2c3e50; font-weight:bold; text-decoration:none; }
+  .question-item p { color:#888; font-size:13px; margin:5px 0 0; }
+</style>
+
+<div class="search-page">
+  <h1>🔍 <%= isEn ? 'Search' : '搜索' %></h1>
+
+  <form class="search-form" action="/search<%= isEn ? '?lang=en' : '' %>" method="GET">
+    <input type="text" name="q" placeholder="<%= __('search.placeholder') %>" value="<%= query %>">
+    <button type="submit"><%= isEn ? 'Search' : '搜索' %></button>
+    <% if (isEn) { %><input type="hidden" name="lang" value="en"><% } %>
+  </form>
+
+  <% if (query) { %>
+    <div class="result-count">
+      <%= isEn ? 'Search results for' : '搜索"' %><b>"<%= query %>"</b><%= isEn ? '' : '"' %>
+      — <%= isEn ? tours.length + ' tours found' : '找到 ' + tours.length + ' 条线路' %>
+    </div>
+
+    <% if (tours.length === 0 && questions.length === 0) { %>
+      <div class="no-results">
+        <div class="big-icon">😅</div>
+        <p><%= isEn ? 'No results found for "' + query + '", try different keywords' : '未找到 "' + query + '" 相关结果' %></p>
+        <p style="font-size:14px;color:#bbb;"><%= isEn ? 'Suggestions: try shorter keywords, or different terms' : '建议：试试更短的关键词，或换个说法' %></p>
+      </div>
+    <% } else { %>
+      <div class="tour-grid">
+        <% tours.forEach(function(tour) { %>
+          <a href="/tour/<%= tour.id %><%= isEn ? '?lang=en' : '' %>" style="text-decoration:none;color:inherit;">
+            <div class="tour-card">
+              <div class="card-img">
+                <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>">
+                <span class="tag"><%= tt(tour, 'type_label') %></span>
+              </div>
+              <div class="card-body">
+                <h3><%= tt(tour, 'title') %></h3>
+                <p class="desc"><%= (tt(tour, 'description') || '').substring(0, 100) %></p>
+                <div class="meta">
+                  <span class="price">¥ <b><%= tour.price %></b> <%= isEn ? 'from' : '起' %></span>
+                  <span class="rating">⭐ <%= tour.satisfaction %></span>
+                </div>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (questions.length > 0) { %>
+      <div class="question-list">
+        <h3><%= isEn ? 'Related Questions' : '相关问题' %></h3>
+        <% questions.forEach(function(q) { %>
+          <div class="question-item">
+            <a href="/lywd"><%= q.title %></a>
+            <p><%= (q.content || '').substring(0, 100) %>...</p>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

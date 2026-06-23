@@ -1,347 +1,234 @@
-<% let path='/'; let title='首页 - 智慧旅游'; %>
+<% let path='/'; let title=__('site.title.home'); %>
 <%- include('partials/header', { path, title }) %>
 
 <style>
-  /* === 首页专属样式 === */
+  /* === Hero === */
   .hero-section {
-    position: relative;
-    width: 100%;
-    height: 85vh;
-    min-height: 500px;
-    max-height: 700px;
-    overflow: hidden;
+    position: relative; width: 100%; height: 85vh; min-height: 500px; max-height: 700px; overflow: hidden;
   }
   .hero-section .swiper-slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(0.7);
+    width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);
   }
   .hero-overlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 100%);
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 100%);
+    z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
   }
   .hero-overlay h1 {
-    color: #fff;
-    font-size: 48px;
-    font-weight: 700;
-    text-shadow: 0 2px 20px rgba(0,0,0,0.3);
-    margin-bottom: 10px;
-    text-align: center;
+    color: #fff; font-size: 48px; font-weight: 700; text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    margin-bottom: 10px; text-align: center;
   }
   .hero-overlay p {
-    color: rgba(255,255,255,0.9);
-    font-size: 18px;
-    margin-bottom: 30px;
-    text-align: center;
+    color: rgba(255,255,255,0.9); font-size: 18px; margin-bottom: 30px; text-align: center;
   }
   .hero-search {
-    display: flex;
-    max-width: 600px;
-    width: 90%;
-    background: rgba(255,255,255,0.95);
-    border-radius: 50px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    display: flex; max-width: 600px; width: 90%;
+    background: rgba(255,255,255,0.95); border-radius: 50px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
   }
   .hero-search input {
-    flex: 1;
-    border: none;
-    padding: 16px 25px;
-    font-size: 16px;
-    outline: none;
-    background: transparent;
+    flex: 1; border: none; padding: 16px 25px; font-size: 16px; outline: none; background: transparent;
   }
   .hero-search button {
-    padding: 16px 35px;
-    background: linear-gradient(135deg, #ff6600, #ff4500);
-    color: #fff;
-    border: none;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: opacity 0.3s;
+    padding: 16px 35px; background: linear-gradient(135deg, #ff6600, #ff4500);
+    color: #fff; border: none; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s;
   }
   .hero-search button:hover { opacity: 0.9; }
 
+  /* === Section Titles === */
+  .section-wrap { max-width: 1400px; margin: 0 auto; padding: 0 15px; }
   .section-title {
-    text-align: center;
-    padding: 50px 15px 10px;
-    position: relative;
+    text-align: center; padding: 50px 15px 10px; position: relative;
   }
   .section-title h2 {
-    font-size: 32px;
-    color: #2c3e50;
-    margin: 0;
-    font-weight: 700;
+    font-size: 32px; color: #2c3e50; margin: 0; font-weight: 700;
   }
-  .section-title p {
-    color: #95a5a6;
-    font-size: 15px;
-    margin: 8px 0 0;
-  }
+  .section-title p { color: #95a5a6; font-size: 15px; margin: 8px 0 0; }
   .section-title::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, #59b200, #ff6600);
-    margin: 15px auto 0;
-    border-radius: 2px;
+    content: ''; display: block; width: 60px; height: 3px;
+    background: linear-gradient(90deg, #59b200, #ff6600); margin: 15px auto 0; border-radius: 2px;
   }
 
+  /* === Stats === */
+  .stats-bar {
+    display: flex; justify-content: center; gap: 60px; padding: 35px 15px; background: #f8f9fa;
+    flex-wrap: wrap; border-bottom: 1px solid #eee;
+  }
+  .stats-bar .stat-item { text-align: center; }
+  .stats-bar .stat-item .num { font-size: 32px; font-weight: 700; color: #59b200; }
+  .stats-bar .stat-item .label { font-size: 13px; color: #7f8c8d; margin-top: 4px; }
+
+  /* === Tour Grid & Cards === */
   .tour-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 25px;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 15px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px;
+    max-width: 1400px; margin: 0 auto; padding: 20px 15px;
   }
   .tour-card {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    transition: all 0.3s ease;
-    border: 1px solid #f0f0f0;
-    height: 100%;
+    background: #fff; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05); transition: all 0.35s ease;
+    border: 1px solid #f0f0f0; height: 100%;
   }
   .tour-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+    transform: translateY(-6px); box-shadow: 0 15px 40px rgba(0,0,0,0.12);
   }
   .tour-card .card-img {
-    position: relative;
-    height: 220px;
-    overflow: hidden;
+    position: relative; height: 220px; overflow: hidden;
   }
   .tour-card .card-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s;
+    width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s;
   }
-  .tour-card:hover .card-img img {
-    transform: scale(1.08);
-  }
+  .tour-card:hover .card-img img { transform: scale(1.08); }
   .tour-card .card-img .tag {
-    position: absolute;
-    top: 12px;
-    left: 0;
-    background: #59b200;
-    color: #fff;
-    padding: 4px 14px;
-    font-size: 12px;
-    font-weight: 600;
+    position: absolute; top: 12px; left: 0;
+    background: #59b200; color: #fff; padding: 4px 14px; font-size: 12px; font-weight: 600;
     border-radius: 0 4px 4px 0;
   }
   .tour-card .card-img .tag-promo {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: #ff6600;
-    color: #fff;
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(255,102,0,0.3);
+    position: absolute; top: 12px; right: 12px;
+    background: #ff6600; color: #fff; padding: 3px 10px; font-size: 11px; font-weight: 600;
+    border-radius: 4px; box-shadow: 0 2px 8px rgba(255,102,0,0.3);
   }
-  .tour-card .card-body {
-    padding: 16px;
-  }
+  .tour-card .card-body { padding: 18px 20px; }
   .tour-card .card-body h3 {
-    font-size: 16px;
-    color: #2c3e50;
-    margin: 0 0 8px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 600;
+    font-size: 16px; color: #2c3e50; margin: 0 0 8px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600;
   }
   .tour-card .card-body .desc {
-    color: #7f8c8d;
-    font-size: 13px;
-    line-height: 1.5;
-    margin: 0 0 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    color: #7f8c8d; font-size: 13px; line-height: 1.5; margin: 0 0 14px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
   .tour-card .card-body .meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 12px;
-    border-top: 1px solid #f5f5f5;
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 14px; border-top: 1px solid #f0f0f0;
   }
-  .tour-card .card-body .meta .price {
-    color: #ff6600;
-    font-size: 15px;
-    font-weight: 600;
-  }
-  .tour-card .card-body .meta .price b {
-    font-size: 22px;
-  }
-  .tour-card .card-body .meta .rating {
-    color: #95a5a6;
-    font-size: 13px;
-  }
+  .tour-card .card-body .meta .price { color: #ff6600; font-size: 14px; font-weight: 600; }
+  .tour-card .card-body .meta .price b { font-size: 22px; }
+  .tour-card .card-body .meta .rating { color: #95a5a6; font-size: 13px; }
 
-  /* 目的地卡片 */
+  /* === Promotion Section === */
+  .promo-section {
+    background: linear-gradient(135deg, #fff4e6 0%, #ffe8d6 100%);
+    padding: 20px 0 40px; margin-top: 30px;
+  }
+  .promo-section .section-title h2 { color: #e65100; }
+  .promo-section .section-title::after { background: linear-gradient(90deg, #ff6600, #ff4500); }
+
+  /* === Destinations Grid === */
   .dest-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-    gap: 16px;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 15px 50px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+    gap: 16px; max-width: 1400px; margin: 0 auto; padding: 20px 15px 50px;
   }
   .dest-card {
-    background: #fff;
-    border: 1px solid #f0f0f0;
-    border-radius: 12px;
-    padding: 20px 12px;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
+    background: #fff; border: 1px solid #f0f0f0; border-radius: 14px;
+    padding: 22px 12px; text-align: center; transition: all 0.3s ease;
+    cursor: pointer; text-decoration: none; color: inherit;
   }
   .dest-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.1);
     border-color: #59b200;
   }
-  .dest-card .emoji { font-size: 38px; margin-bottom: 8px; display: block; }
+  .dest-card .emoji { font-size: 36px; margin-bottom: 8px; display: block; }
   .dest-card .name { font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 4px; }
   .dest-card .tags { font-size: 12px; color: #95a5a6; }
 
-  /* 特价区 */
-  .promo-section {
-    background: linear-gradient(135deg, #fff8f0, #fff0e6);
-    padding: 40px 15px;
-    margin-top: 20px;
+  /* === CTA Banner === */
+  .cta-banner {
+    max-width: 1400px; margin: 30px auto; padding: 0 15px;
   }
-  .promo-section h2 { color: #e65100; }
-  .promo-section h2::after { background: linear-gradient(90deg, #ff6600, #ff4500); }
+  .cta-banner-inner {
+    background: linear-gradient(135deg, #59b200, #3d8a00);
+    border-radius: 18px; padding: 35px 45px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 20px;
+    box-shadow: 0 10px 35px rgba(89,178,0,0.25); transition: all 0.3s;
+  }
+  .cta-banner-inner:hover {
+    transform: translateY(-3px); box-shadow: 0 15px 45px rgba(89,178,0,0.35);
+  }
+  .cta-text h3 { font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 6px; }
+  .cta-text p { font-size: 14px; color: rgba(255,255,255,0.9); margin: 0; }
+  .cta-phone { text-align: right; }
+  .cta-phone .num { font-size: 24px; font-weight: 700; color: #fff; }
+  .cta-phone .hours { font-size: 12px; color: rgba(255,255,255,0.8); }
+  .cta-btn {
+    background: #fff; color: #59b200; padding: 12px 30px; border-radius: 30px;
+    font-size: 15px; font-weight: 700; text-decoration: none; transition: 0.3s;
+  }
+  .cta-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
 
-  /* 搜索框 */
-  #searchResults {
-    max-width: 1400px;
-    margin: 30px auto;
-    padding: 0 15px;
-  }
-  #searchResults h2 {
-    font-size: 24px;
-    color: #2c3e50;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #59b200;
-    margin-bottom: 20px;
-  }
-
-  /* 回到顶部 */
-  .back-top {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 45px;
-    height: 45px;
-    background: #59b200;
+  /* === Floating Buttons === */
+  .float-btn {
+    position: fixed; width: 48px; height: 48px; right: 25px; z-index: 999;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    text-decoration: none; border: none; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25); transition: all 0.3s; font-size: 20px;
     color: #fff;
-    border: none;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(89, 178, 0, 0.3);
-    transition: all 0.3s;
-    z-index: 999;
-    display: none;
   }
-  .back-top:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(89, 178, 0, 0.4); }
+  .float-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 25px rgba(0,0,0,0.3); }
+  .float-top { bottom: 30px; background: #59b200; display: none; }
+  .float-kefu { bottom: 90px; background: linear-gradient(135deg, #ff6600, #ff4500); }
 
-  /* Stats */
-  .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 50px;
-    padding: 30px 15px;
-    background: #f8f9fa;
-    margin-top: 20px;
-    flex-wrap: wrap;
-  }
-  .stats-bar .stat-item { text-align: center; }
-  .stats-bar .stat-item .num { font-size: 28px; font-weight: 700; color: #59b200; }
-  .stats-bar .stat-item .label { font-size: 13px; color: #7f8c8d; margin-top: 4px; }
-
+  /* === Responsive === */
   @media (max-width: 768px) {
     .hero-overlay h1 { font-size: 28px; }
     .hero-overlay p { font-size: 14px; }
     .hero-section { height: 60vh; min-height: 400px; }
-    .tour-grid { grid-template-columns: 1fr; }
-    .dest-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-    .stats-bar { gap: 20px; }
+    .tour-grid { grid-template-columns: 1fr; gap: 18px; }
+    .dest-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .stats-bar { gap: 25px; }
     .section-title h2 { font-size: 24px; }
+    .cta-banner-inner { flex-direction: column; text-align: center; padding: 25px 20px; }
+    .cta-phone { text-align: center; }
   }
 </style>
 
-<!-- ========== HERO 区域 ========== -->
+<!-- ========== HERO ========== -->
 <div class="hero-section">
   <div class="swiper-container" style="width:100%;height:100%;">
     <div class="swiper-wrapper">
       <div class="swiper-slide"><img src="/img/search.jpg" alt="旅游推荐"></div>
-      <div class="swiper-slide"><img src="/img/s1.jpg" alt="黄山云海"></div>
-      <div class="swiper-slide"><img src="/img/s2.jpg" alt="九寨沟"></div>
+      <div class="swiper-slide"><img src="/img/t10.jpg" alt="黄山"></div>
+      <div class="swiper-slide"><img src="/img/t11.jpg" alt="九寨沟"></div>
     </div>
     <div class="swiper-pagination"></div>
   </div>
   <div class="hero-overlay">
-    <h1>探索世界，从这里开始</h1>
-    <p>精选全球热门线路，让旅行更简单</p>
-    <div class="hero-search">
-      <input type="text" id="searchInput" placeholder="🔍 搜索目的地、景点或城市...">
-      <button onclick="searchTours()">搜索</button>
-    </div>
+    <h1><%= __('home.hero.title') %></h1>
+    <p><%= __('home.hero.subtitle') %></p>
+    <form class="hero-search" action="/search<%= isEn ? '?lang=en' : '' %>" method="GET" onsubmit="return goSearch()">
+      <input type="text" name="q" id="searchInput" placeholder="🔍 <%= __('home.hero.search') %>" autocomplete="off">
+      <button type="submit"><%= __('home.hero.searchBtn') %></button>
+    </form>
   </div>
 </div>
 
-<!-- ========== 数据统计 ========== -->
+<!-- ========== STATS ========== -->
 <div class="stats-bar">
-  <div class="stat-item"><div class="num">19</div><div class="label">精选线路</div></div>
-  <div class="stat-item"><div class="num">10+</div><div class="label">热门目的地</div></div>
-  <div class="stat-item"><div class="num">96%</div><div class="label">平均满意度</div></div>
-  <div class="stat-item"><div class="num">24h</div><div class="label">客服在线</div></div>
+  <div class="stat-item"><div class="num">19</div><div class="label"><%= isEn ? 'Selected Tours' : '精选线路' %></div></div>
+  <div class="stat-item"><div class="num">10+</div><div class="label"><%= isEn ? 'Destinations' : '热门目的地' %></div></div>
+  <div class="stat-item"><div class="num">96%</div><div class="label"><%= isEn ? 'Satisfaction' : '平均满意度' %></div></div>
+  <div class="stat-item"><div class="num">24h</div><div class="label"><%= isEn ? 'Online Service' : '客服在线' %></div></div>
 </div>
 
-<!-- ========== 特价推荐 ========== -->
+<!-- ========== PROMOTIONS ========== -->
 <div class="promo-section">
   <div class="section-title">
-    <h2>🔥 限时特价</h2>
-    <p>优惠不容错过，立即预订享受折扣</p>
+    <h2>🔥 <%= __('home.promotions') %></h2>
+    <p><%= __('home.promotionsDesc') %></p>
   </div>
-  <div class="tour-grid" style="padding-top:20px;">
+  <div class="tour-grid" style="padding-top:10px;">
     <% hotTours.filter(t => t.is_promotion).slice(0, 3).forEach(function(tour) { %>
-      <a href="/tour/<%= tour.id %>" style="text-decoration:none;color:inherit;">
+      <a href="/tour/<%= tour.id %><%= isEn ? '?lang=en' : '' %>" style="text-decoration:none;color:inherit;">
         <div class="tour-card">
           <div class="card-img">
-            <img src="/img/<%= tour.image %>" alt="<%= tour.title %>">
-            <span class="tag"><%= tour.type_label %></span>
-            <span class="tag-promo">🔥 特价</span>
+            <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>">
+            <span class="tag"><%= tt(tour, 'type_label') %></span>
+            <span class="tag-promo"><%= isEn ? 'SALE' : '特价' %></span>
           </div>
           <div class="card-body">
-            <h3><%= tour.title %></h3>
-            <p class="desc"><%= tour.description %></p>
+            <h3><%= tt(tour, 'title') %></h3>
+            <p class="desc"><%= tt(tour, 'description') %></p>
             <div class="meta">
-              <span class="price">¥&nbsp;<b><%= tour.price %></b>&nbsp;起
+              <span class="price">¥&nbsp;<b><%= tour.price %></b><%= isEn ? " from" : "起" %>
                 <% if (tour.original_price > tour.price) { %>
                   <span style="font-size:12px;text-decoration:line-through;color:#bbb;font-weight:normal;">¥<%= tour.original_price %></span>
                 <% } %>
@@ -355,28 +242,28 @@
   </div>
 </div>
 
-<!-- ========== 热门旅游 ========== -->
+<!-- ========== HOT TOURS ========== -->
 <div class="section-title">
-  <h2>🏝️ 热门旅游推荐</h2>
-  <p>国内旅游、国外旅游、自助旅游、自驾旅游、油轮签证等各种最新热门旅游推荐</p>
+  <h2>🏝️ <%= __('home.hotTours') %></h2>
+  <p><%= __('home.hotToursDesc') %></p>
 </div>
 
-<div class="tour-grid" style="padding-top:20px;padding-bottom:20px;">
+<div class="tour-grid" style="padding-bottom:30px;">
   <% hotTours.forEach(function(tour) { %>
-    <a href="/tour/<%= tour.id %>" style="text-decoration:none;color:inherit;">
+    <a href="/tour/<%= tour.id %><%= isEn ? '?lang=en' : '' %>" style="text-decoration:none;color:inherit;">
       <div class="tour-card">
         <div class="card-img">
-          <img src="/img/<%= tour.image %>" alt="<%= tour.title %>">
-          <span class="tag"><%= tour.type_label %></span>
+          <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>">
+          <span class="tag"><%= tt(tour, 'type_label') %></span>
           <% if (tour.is_promotion) { %>
-            <span class="tag-promo">🔥 特价</span>
+            <span class="tag-promo"><%= isEn ? 'SALE' : '特价' %></span>
           <% } %>
         </div>
         <div class="card-body">
-          <h3><%= tour.title %></h3>
-          <p class="desc"><%= tour.description %></p>
+          <h3><%= tt(tour, 'title') %></h3>
+          <p class="desc"><%= tt(tour, 'description') %></p>
           <div class="meta">
-            <span class="price">¥&nbsp;<b><%= tour.price %></b>&nbsp;起</span>
+            <span class="price">¥&nbsp;<b><%= tour.price %></b><%= isEn ? " from" : "起" %></span>
             <span class="rating">⭐ <%= tour.satisfaction %></span>
           </div>
         </div>
@@ -385,148 +272,103 @@
   <% }) %>
 </div>
 
-<!-- ========== 搜索结果显示区 ========== -->
-<div id="searchResults" style="display:none;">
-  <h2>🔍 搜索结果</h2>
-  <div id="searchLoading" style="display:none;text-align:center;padding:40px;color:#999;">
-    <div style="font-size:30px;margin-bottom:10px;">⏳</div>
-    <div>搜索中...</div>
-  </div>
-  <div id="resultsContainer" class="tour-grid"></div>
+<!-- ========== CATEGORIES ========== -->
+<div class="section-title" style="padding-top:20px;">
+  <h2>📂 <%- isEn ? 'Categories' : '线路分类' %></h2>
+  <p><%- isEn ? 'Browse by category' : '按分类浏览线路' %></p>
 </div>
-
-<!-- ========== 客服中心入口 ========== -->
-<div style="max-width:1400px;margin:20px auto;padding:0 15px;">
-  <a href="/kefu" style="text-decoration:none;color:inherit;display:block;">
-    <div style="background:linear-gradient(135deg,#59b200,#4a9a00);border-radius:16px;padding:30px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;box-shadow:0 8px 25px rgba(89,178,0,0.2);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 35px rgba(89,178,0,0.3)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 8px 25px rgba(89,178,0,0.2)'">
-      <div>
-        <div style="font-size:20px;font-weight:bold;color:#fff;margin-bottom:5px;">💬 需要帮助？我们在线！</div>
-        <div style="font-size:14px;color:rgba(255,255,255,0.9);">专业旅游顾问 · 一对一服务 · 全天候在线</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:20px;">
-        <div style="text-align:right;">
-          <div style="font-size:22px;font-weight:bold;color:#fff;">400-888-9999</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.8);">周一至周日 9:00-21:00</div>
-        </div>
-        <span style="background:#fff;color:#59b200;padding:10px 25px;border-radius:25px;font-size:15px;font-weight:bold;">咨询客服 →</span>
-      </div>
-    </div>
-  </a>
-</div>
-
-<!-- ========== 热门目的地 ========== -->
-<div class="section-title" style="padding-top:30px;">
-  <h2>🌍 热门目的地</h2>
-  <p>精选全球热门旅游目的地，点击查看详细线路</p>
-</div>
-
-<div class="dest-grid">
-  <% var destinations = [
-    {name:'黄山 · 天下第一奇山', emoji:'🏔️', tourId:10, desc:'迎客松·云海·日出'},
-    {name:'九寨沟 · 人间仙境', emoji:'🌊', tourId:11, desc:'五花海·诺日朗瀑布'},
-    {name:'三亚 · 天涯海角', emoji:'🏝️', tourId:12, desc:'蜈支洲岛·亚龙湾'},
-    {name:'丽江 · 玉龙雪山', emoji:'🏯', tourId:13, desc:'古城·雪山·束河'},
-    {name:'张家界 · 阿凡达', emoji:'🏔️', tourId:14, desc:'袁家界·天门山'},
-    {name:'桂林 · 山水甲天下', emoji:'🎋', tourId:15, desc:'漓江·阳朔·竹筏'},
-    {name:'西安 · 千年古都', emoji:'🛕', tourId:16, desc:'兵马俑·古城墙'},
-    {name:'西双版纳 · 雨林', emoji:'🌺', tourId:17, desc:'野象谷·傣族园'},
-    {name:'乌镇 · 梦里水乡', emoji:'🏘️', tourId:18, desc:'西栅·摇橹船'},
-    {name:'故宫 · 紫禁城', emoji:'🏰', tourId:19, desc:'三大殿·御花园'},
-    {name:'泰国 · 曼谷', emoji:'🇹🇭', tourId:1, desc:'大皇宫·人妖秀'},
-    {name:'马尔代夫 · 双鱼岛', emoji:'🇲🇻', tourId:2, desc:'潜水·海上日落'},
-    {name:'日本 · 富士山', emoji:'🇯🇵', tourId:4, desc:'温泉·樱花'},
-    {name:'巴厘岛 · 蜜月', emoji:'🇮🇩', tourId:6, desc:'海滩·SPA'},
-    {name:'土耳其 · 热气球', emoji:'🇹🇷', tourId:8, desc:'棉花堡·卡帕'},
-    {name:'法国 · 浪漫巴黎', emoji:'🇫🇷', tourId:5, desc:'铁塔·卢浮宫'},
-  ]; %>
-  <% destinations.forEach(function(d) { %>
-    <a href="/tour/<%= d.tourId %>" class="dest-card">
-      <span class="emoji"><%= d.emoji %></span>
-      <div class="name"><%= d.name %></div>
-      <div class="tags"><%= d.desc %></div>
+<div class="dest-grid" style="padding-bottom:30px;">
+  <% categories.forEach(function(cat) { %>
+    <a href="/<%= isEn ? 'gwjd' : 'zmzg' %>" class="dest-card">
+      <span class="emoji">
+        <% if (cat.slug === 'domestic-long' || cat.slug === 'domestic-short') { %>🏔️<% } %>
+        <% if (cat.slug === 'abroad-long') { %>🌍<% } %>
+        <% if (cat.slug === 'self-tour') { %>🚶<% } %>
+        <% if (cat.slug === 'cruise') { %>🚢<% } %>
+      </span>
+      <div class="name"><%= tc(cat) %></div>
+      <div class="tags"><%= isEn ? 'View tours' : '查看线路' %> →</div>
     </a>
   <% }) %>
 </div>
 
-<!-- 回到顶部按钮 -->
-<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<!-- ========== CTA ========== -->
+<div class="cta-banner">
+  <a href="/kefu" style="text-decoration:none;display:block;">
+    <div class="cta-banner-inner">
+      <div class="cta-text">
+        <h3>💬 <%= isEn ? 'Need Help? We\'re Online!' : '需要帮助？我们在线！' %></h3>
+        <p><%= isEn ? 'Professional travel consultants, one-on-one service' : '专业旅游顾问 · 一对一服务 · 全天候在线' %></p>
+      </div>
+      <div class="cta-phone">
+        <div class="num">400-888-9999</div>
+        <div class="hours"><%= __('kefu.contactHours') %></div>
+      </div>
+      <span class="cta-btn"><%= isEn ? 'Chat Now' : '咨询客服' %> →</span>
+    </div>
+  </a>
+</div>
 
-<!-- 浮动客服按钮 -->
-<a href="/kefu" style="position:fixed;bottom:90px;right:30px;width:45px;height:45px;background:linear-gradient(135deg,#ff6600,#ff4500);color:#fff;border:none;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:0 4px 15px rgba(255,102,0,0.3);z-index:999;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 20px rgba(255,102,0,0.4)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(255,102,0,0.3)'" title="在线客服">
-  💬
-</a>
+<!-- ========== DESTINATIONS ========== -->
+<div class="section-title" style="padding-top:10px;">
+  <h2>🌍 <%= isEn ? 'Popular Destinations' : '热门目的地' %></h2>
+  <p><%= isEn ? 'Explore popular destinations around the world' : '精选全球热门旅游目的地' %></p>
+</div>
+
+<div class="dest-grid">
+  <% var destinations = [
+    {nameEn:'Huangshan Mountain', nameCn:'黄山 · 天下第一奇山', emoji:'🏔️', tourId:10, descEn:'Welcoming Pine · Sea of Clouds', descCn:'迎客松·云海·日出'},
+    {nameEn:'Jiuzhaigou Valley', nameCn:'九寨沟 · 人间仙境', emoji:'🌊', tourId:11, descEn:'Five Flower Lake · Waterfalls', descCn:'五花海·诺日朗瀑布'},
+    {nameEn:'Sanya Paradise', nameCn:'三亚 · 天涯海角', emoji:'🏝️', tourId:12, descEn:'Wuzhizhou · Yalong Bay', descCn:'蜈支洲岛·亚龙湾'},
+    {nameEn:'Lijiang Ancient Town', nameCn:'丽江 · 玉龙雪山', emoji:'🏯', tourId:13, descEn:'Old Town · Jade Dragon Snow', descCn:'古城·雪山·束河'},
+    {nameEn:'Zhangjiajie', nameCn:'张家界 · 阿凡达', emoji:'🏔️', tourId:14, descEn:'Avatar Mountains · Glass Walk', descCn:'袁家界·天门山'},
+    {nameEn:'Guilin Landscape', nameCn:'桂林 · 山水甲天下', emoji:'🎋', tourId:15, descEn:'Li River · Yangshuo', descCn:'漓江·阳朔·竹筏'},
+    {nameEn:'Xi\'an Ancient Capital', nameCn:'西安 · 千年古都', emoji:'🛕', tourId:16, descEn:'Terracotta · City Wall', descCn:'兵马俑·古城墙'},
+    {nameEn:'Xishuangbanna', nameCn:'西双版纳 · 雨林', emoji:'🌺', tourId:17, descEn:'Rainforest · Elephants', descCn:'野象谷·傣族园'},
+    {nameEn:'Wuzhen Water Town', nameCn:'乌镇 · 梦里水乡', emoji:'🏘️', tourId:18, descEn:'Canals · Gondola', descCn:'西栅·摇橹船'},
+    {nameEn:'Forbidden City', nameCn:'故宫 · 紫禁城', emoji:'🏰', tourId:19, descEn:'Palace · Garden', descCn:'三大殿·御花园'},
+    {nameEn:'Bangkok Thailand', nameCn:'泰国 · 曼谷', emoji:'🇹🇭', tourId:1, descEn:'Grand Palace · Cabaret', descCn:'大皇宫·人妖秀'},
+    {nameEn:'Maldives', nameCn:'马尔代夫 · 双鱼岛', emoji:'🇲🇻', tourId:2, descEn:'Diving · Sunset', descCn:'潜水·海上日落'},
+    {nameEn:'Japan Mt.Fuji', nameCn:'日本 · 富士山', emoji:'🇯🇵', tourId:4, descEn:'Hot Spring · Cherry', descCn:'温泉·樱花'},
+    {nameEn:'Bali Island', nameCn:'巴厘岛 · 蜜月', emoji:'🇮🇩', tourId:6, descEn:'Beach · SPA', descCn:'海滩·SPA'},
+    {nameEn:'Turkey', nameCn:'土耳其 · 热气球', emoji:'🇹🇷', tourId:8, descEn:'Balloon · Pamukkale', descCn:'棉花堡·卡帕'},
+    {nameEn:'Paris France', nameCn:'法国 · 浪漫巴黎', emoji:'🇫🇷', tourId:5, descEn:'Eiffel · Louvre', descCn:'铁塔·卢浮宫'},
+  ]; %>
+  <% destinations.forEach(function(d) { %>
+    <a href="/tour/<%= d.tourId %><%= isEn ? '?lang=en' : '' %>" class="dest-card">
+      <span class="emoji"><%= d.emoji %></span>
+      <div class="name"><%= isEn ? d.nameEn : d.nameCn %></div>
+      <div class="tags"><%= isEn ? d.descEn : d.descCn %></div>
+    </a>
+  <% }) %>
+</div>
+
+<!-- Floating buttons -->
+<button class="float-btn float-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<a href="/kefu" class="float-btn float-kefu" title="<%= isEn ? 'Customer Service' : '在线客服' %>">💬</a>
 
 <script>
-  // Swiper
   var swiper = new Swiper('.swiper-container', {
     pagination: { el: '.swiper-pagination', clickable: true },
-    loop: true,
-    autoplay: { delay: 3500, disableOnInteraction: false },
-    effect: 'fade',
-    fadeEffect: { crossFade: true }
+    loop: true, autoplay: { delay: 3500, disableOnInteraction: false },
+    effect: 'fade', fadeEffect: { crossFade: true }
   });
 
-  // 回到顶部
   window.addEventListener('scroll', function() {
-    document.getElementById('backTop').style.display = window.scrollY > 500 ? 'block' : 'none';
+    var btn = document.getElementById('backTop');
+    if (btn) btn.style.display = window.scrollY > 500 ? 'flex' : 'none';
   });
 
-  // 搜索
-  async function searchTours() {
-    const q = document.getElementById('searchInput').value.trim();
-    if (!q) return;
-    const section = document.getElementById('searchResults');
-    const container = document.getElementById('resultsContainer');
-    const loading = document.getElementById('searchLoading');
-    section.style.display = 'block';
-    container.innerHTML = '';
-    loading.style.display = 'block';
-    section.scrollIntoView({ behavior: 'smooth' });
-
-    try {
-      const res = await fetch('/api/search?q=' + encodeURIComponent(q));
-      const data = await res.json();
-      loading.style.display = 'none';
-
-      if (data.data.tours.length === 0 && data.data.questions.length === 0) {
-        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#999;"><div style="font-size:50px;margin-bottom:15px;">😅</div><p>未找到 "<b>' + q + '</b>" 相关结果，试试其他关键词</p></div>';
-      } else {
-        data.data.tours.forEach(t => {
-          container.innerHTML += `
-            <a href="/tour/${t.id}" style="text-decoration:none;color:inherit;">
-              <div class="tour-card">
-                <div class="card-img">
-                  <img src="/img/${t.image}" alt="${t.title}">
-                  <span class="tag">${t.type_label || ''}</span>
-                </div>
-                <div class="card-body">
-                  <h3>${t.title}</h3>
-                  <p class="desc">${(t.description || '').substring(0, 80)}</p>
-                  <div class="meta">
-                    <span class="price">¥ <b>${t.price}</b> 起</span>
-                    <span class="rating">⭐ ${t.satisfaction || '0%'}</span>
-                  </div>
-                </div>
-              </div>
-            </a>`;
-        });
-        if (data.data.questions.length > 0) {
-          let qHtml = '<div style="grid-column:1/-1;margin-top:10px;"><h3 style="color:#2c3e50;border-bottom:2px solid #59b200;padding-bottom:8px;">❓ 相关问题</h3></div>';
-          data.data.questions.forEach(q => {
-            qHtml += '<div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:15px;"><a href="/lywd" style="color:#2c3e50;font-weight:bold;text-decoration:none;">' + q.title + '</a><p style="color:#888;font-size:13px;margin:5px 0 0;">' + (q.content || '').substring(0, 80) + '...</p></div>';
-          });
-          container.innerHTML += qHtml;
-        }
-      }
-    } catch(e) {
-      loading.style.display = 'none';
-      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#e74c3c;">搜索出错了，请稍后重试</div>';
-    }
+  function goSearch() {
+    var q = document.getElementById('searchInput').value.trim();
+    if (!q) { document.getElementById('searchInput').focus(); return false; }
+    var lang = '<%= lang %>' === 'en' ? '?lang=en' : '';
+    window.location.href = '/search?q=' + encodeURIComponent(q) + lang;
+    return false;
   }
 
-  // Enter 键搜索
   document.getElementById('searchInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') { e.preventDefault(); searchTours(); }
+    if (e.key === 'Enter') { e.preventDefault(); goSearch(); }
   });
 </script>
 

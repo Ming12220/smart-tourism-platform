@@ -1,0 +1,90 @@
+<% let path='/admin/faq'; let title='FAQ知识库管理 - 后台管理'; %>
+<%- include('../partials/header', { path, title }) %>
+
+<style>
+  .admin-page { padding-top:60px; max-width:1200px; margin:0 auto; padding-left:15px; padding-right:15px; }
+  .admin-page h1 { color:#2c3e50; font-size:24px; border-bottom:2px solid #59b200; padding-bottom:10px; }
+  .faq-table { width:100%; border-collapse:collapse; margin-top:15px; font-size:13px; }
+  .faq-table th { background:#59b200; color:#fff; padding:10px 8px; text-align:left; }
+  .faq-table td { padding:8px; border-bottom:1px solid #eee; vertical-align:top; }
+  .faq-table tr:hover { background:#f5f5f5; }
+  .faq-table .answer-cell { max-width:400px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; color:#fff; }
+  .badge-visa { background:#e65100; }
+  .badge-tours { background:#1565c0; }
+  .badge-booking { background:#2e7d32; }
+  .badge-price { background:#6a1b9a; }
+  .badge-promotion { background:#c62828; }
+  .badge-service { background:#00838f; }
+  .badge-guide { background:#4e342e; }
+  .badge-general { background:#78909c; }
+  .add-form { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px; padding:20px; margin-top:15px; }
+  .add-form h3 { margin:0 0 15px; font-size:16px; color:#2c3e50; }
+  .add-form .row { display:flex; gap:15px; margin-bottom:12px; }
+  .add-form .row input, .add-form .row select { flex:1; padding:8px; border:1px solid #ddd; border-radius:4px; font-size:13px; }
+  .add-form textarea { width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; font-size:13px; resize:vertical; min-height:100px; }
+  .add-form button { padding:10px 30px; background:#59b200; color:#fff; border:none; border-radius:4px; font-size:14px; cursor:pointer; }
+  .add-form button:hover { background:#4a9a00; }
+  .tag { color:#999; font-size:11px; }
+  .delete-btn { color:#e74c3c; text-decoration:none; font-size:12px; }
+  .delete-btn:hover { text-decoration:underline; }
+</style>
+
+<div class="admin-page">
+  <h1>📚 FAQ知识库管理</h1>
+  <p style="color:#95a5a6;font-size:13px;">管理客服机器人的自动回复内容，根据关键词匹配用户问题。</p>
+
+  <details class="add-form">
+    <summary style="cursor:pointer;font-size:14px;color:#59b200;font-weight:bold;">➕ 添加新FAQ</summary>
+    <form method="POST" action="/admin/faq/add" style="margin-top:15px;">
+      <div class="row">
+        <input type="text" name="keywords" placeholder="关键词（空格分隔，如：泰国落地签 泰国签证）" required>
+        <input type="text" name="question" placeholder="问题描述（如：泰国落地签怎么办理？）" required>
+      </div>
+      <div class="row">
+        <select name="category">
+          <option value="visa">🛂 签证</option>
+          <option value="tours">🏔️ 线路推荐</option>
+          <option value="booking">📋 预订</option>
+          <option value="price">💰 价格</option>
+          <option value="promotion">🎉 优惠</option>
+          <option value="service">💁 服务</option>
+          <option value="guide">📖 攻略</option>
+          <option value="general">📌 通用</option>
+        </select>
+        <input type="number" name="sort_order" placeholder="排序（数字越小越靠前）" value="0">
+      </div>
+      <textarea name="answer" placeholder="回复内容（支持HTML标签，如&lt;br&gt;、&lt;b&gt;等）" required></textarea>
+      <button type="submit">添加FAQ</button>
+    </form>
+  </details>
+
+  <table class="faq-table">
+    <thead>
+      <tr>
+        <th style="width:40px;">#</th>
+        <th style="width:80px;">分类</th>
+        <th style="width:140px;">关键词</th>
+        <th>问题</th>
+        <th>回复预览</th>
+        <th style="width:50px;">排序</th>
+        <th style="width:50px;">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% faqs.forEach(function(faq) { %>
+        <tr>
+          <td><%= faq.id %></td>
+          <td><span class="badge badge-<%= faq.category %>"><%= faq.category %></span></td>
+          <td><span class="tag"><%= faq.keywords %></span></td>
+          <td><%= faq.question %></td>
+          <td class="answer-cell"><%- faq.answer.replace(/<[^>]+>/g, '').substring(0,80) %></td>
+          <td><%= faq.sort_order %></td>
+          <td><a href="/admin/faq/delete/<%= faq.id %>" class="delete-btn" onclick="return confirm('确定删除这条FAQ吗？')">🗑️ 删除</a></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

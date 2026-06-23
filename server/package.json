@@ -8,9 +8,10 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
-    "better-sqlite3": "^11.0.0",
     "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.0.0",
     "connect-sqlite3": "^0.9.15",
+    "cookie-parser": "^1.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.0",
     "express-session": "^1.18.0",

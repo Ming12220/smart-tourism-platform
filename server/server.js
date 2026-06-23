@@ -2,7 +2,9 @@ const express = require('express');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const { initDatabase } = require('./database/init');
+const i18n = require('./middlewares/i18n');
 
 const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
@@ -14,9 +16,14 @@ const PORT = 3000;
 // Initialize database
 initDatabase();
 
+// Run English data migration
+const { migrateEn } = require('./database/migrate_en_auto');
+migrateEn();
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 
 // Session
 app.use(session({
@@ -31,16 +38,30 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Make user available to all views
+// Make user and i18n available to all views
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   next();
 });
 
+// i18n middleware (must be after session, before routes)
+app.use(i18n);
+
 // Static files — serve original project assets (after route handlers)
 // Only serve /css, /js, /img, and root static files (not index.html)
 app.use(['/css', '/js', '/img'], express.static(path.join(__dirname, '..')));
 app.use('/favicon.ico', express.static(path.join(__dirname, '../img/y.ico')));
+
+// Language switch route
+app.get('/lang/:lang', (req, res) => {
+  const lang = req.params.lang;
+  if (['zh', 'en'].includes(lang)) {
+    res.cookie('lang', lang, { maxAge: 365 * 24 * 60 * 60 * 1000 });
+    if (req.session) req.session.lang = lang;
+  }
+  const redirect = req.get('Referer') || '/';
+  res.redirect(redirect);
+});
 
 // Routes
 app.use('/', authRoutes);
@@ -54,17 +75,44 @@ app.get('/', (req, res) => {
   const { getDb } = require('./database/init');
   const db = getDb();
   const hotTours = db.prepare(`
-    SELECT t.*, c.name as category_name FROM tours t
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
     LEFT JOIN categories c ON t.category_id = c.id
     WHERE t.is_hot = 1 ORDER BY t.created_at DESC LIMIT 9
   `).all();
   const promotions = db.prepare(`
-    SELECT t.*, c.name as category_name FROM tours t
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
     LEFT JOIN categories c ON t.category_id = c.id
     WHERE t.is_promotion = 1 ORDER BY t.created_at DESC LIMIT 6
   `).all();
   const categories = db.prepare('SELECT * FROM categories ORDER BY sort_order').all();
   res.render('index', { hotTours, promotions, categories });
+});
+
+// Search page
+app.get('/search', (req, res) => {
+  const { q } = req.query;
+  const { getDb } = require('./database/init');
+  const db = getDb();
+
+  let tours = [];
+  let questions = [];
+
+  if (q && q.trim()) {
+    const query = `%${q.trim()}%`;
+    tours = db.prepare(`
+      SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
+      LEFT JOIN categories c ON t.category_id = c.id
+      WHERE t.title LIKE ? OR t.description LIKE ? OR t.title_en LIKE ? OR t.description_en LIKE ?
+      LIMIT 20
+    `).all(query, query, query, query);
+
+    questions = db.prepare(`
+      SELECT * FROM questions WHERE title LIKE ? OR content LIKE ?
+      LIMIT 10
+    `).all(query, query);
+  }
+
+  res.render('search', { query: q || '', tours, questions });
 });
 
 // Tourism Consulting
@@ -89,7 +137,7 @@ app.get('/zmzg', (req, res) => {
   const { getDb } = require('./database/init');
   const db = getDb();
   const tours = db.prepare(`
-    SELECT t.*, c.name as category_name FROM tours t
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
     LEFT JOIN categories c ON t.category_id = c.id
     WHERE t.id >= 10 OR t.id = 3
     ORDER BY t.created_at DESC
@@ -102,7 +150,7 @@ app.get('/gwjd', (req, res) => {
   const { getDb } = require('./database/init');
   const db = getDb();
   const tours = db.prepare(`
-    SELECT t.*, c.name as category_name FROM tours t
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
     LEFT JOIN categories c ON t.category_id = c.id
     WHERE (c.slug = 'abroad-long' OR c.slug = 'self-tour') AND t.id NOT IN (3, 12, 13, 17)
     ORDER BY t.created_at DESC
@@ -117,7 +165,7 @@ app.get('/tour/:id', (req, res) => {
   const { getDb } = require('./database/init');
   const db = getDb();
   const tour = db.prepare(`
-    SELECT t.*, c.name as category_name FROM tours t
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
     LEFT JOIN categories c ON t.category_id = c.id WHERE t.id = ?
   `).get(req.params.id);
   if (!tour) return res.status(404).render('error', { message: '线路不存在' });

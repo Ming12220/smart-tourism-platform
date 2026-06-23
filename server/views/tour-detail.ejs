@@ -1,4 +1,4 @@
-<% let path='/tour'; let title='线路详情 - 智慧旅游'; %>
+<% let path='/tour'; let title=__('site.title.home'); %>
 <%- include('partials/header', { path, title }) %>
 
 <div style="padding-top:60px;max-width:1400px;margin:0 auto;padding-left:15px;padding-right:15px;">
@@ -6,28 +6,28 @@
   <div style="font-size:14px;color:#888;padding:15px 0;border-bottom:1px solid #eee;">
     <a href="/" style="color:#888;">首页</a> &gt;
     <a href="/zmzg" style="color:#888;">旅游线路</a> &gt;
-    <span style="color:#333;"><%= tour.title %></span>
+    <span style="color:#333;"><%= tt(tour, 'title') %></span>
   </div>
 
   <!-- Tour Header -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:30px 0;">
     <!-- Image -->
     <div style="border-radius:8px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.1);">
-      <img src="/img/<%= tour.image %>" alt="<%= tour.title %>" style="width:100%;height:400px;object-fit:cover;">
+      <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>" style="width:100%;height:400px;object-fit:cover;">
     </div>
 
     <!-- Info -->
     <div>
-      <h1 style="color:#333;font-size:24px;margin:0 0 10px;"><%= tour.title %></h1>
+      <h1 style="color:#333;font-size:24px;margin:0 0 10px;"><%= tt(tour, 'title') %></h1>
       <div style="display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap;">
-        <span style="background:#59b200;color:#fff;padding:3px 12px;border-radius:4px;font-size:13px;"><%= tour.type_label %></span>
+        <span style="background:#59b200;color:#fff;padding:3px 12px;border-radius:4px;font-size:13px;"><%= tt(tour, 'type_label') %></span>
         <span style="color:#888;font-size:13px;">🗓️ <%= tour.days %></span>
         <span style="color:#888;font-size:13px;">⭐ 满意度 <%= tour.satisfaction %></span>
         <% if (tour.is_hot) { %><span style="color:#ff6b35;font-size:13px;">🔥 热门推荐</span><% } %>
       </div>
 
       <div style="background:#f9f9f9;border-radius:8px;padding:20px;margin-bottom:20px;">
-        <p style="color:#666;font-size:15px;line-height:1.8;margin:0;"><%= tour.description %></p>
+        <p style="color:#666;font-size:15px;line-height:1.8;margin:0;"><%= tt(tour, 'description') %></p>
       </div>
 
       <!-- Price -->
@@ -43,7 +43,7 @@
               </span>
             <% } %>
           </div>
-          <a href="/book/<%= tour.id %>"
+          <a href="/book/<%= tour.id %><%= isEn ? "?lang=en" : "" %>"
              style="padding:15px 40px;background:linear-gradient(135deg,#ff6600,#ff4500);color:#fff;border:none;border-radius:8px;font-size:18px;text-decoration:none;font-weight:bold;box-shadow:0 4px 15px rgba(255,102,0,0.3);display:inline-block;">
             📅 立即预订
           </a>
@@ -53,10 +53,10 @@
 
       <!-- Highlights -->
       <div style="margin-bottom:20px;">
-        <h3 style="color:#333;font-size:16px;margin:0 0 10px;">✨ 行程亮点</h3>
+        <h3 style="color:#333;font-size:16px;margin:0 0 10px;">✨ <%= __('tour.highlights') %></h3>
         <div style="display:flex;flex-wrap:wrap;gap:8px;">
           <% if (tour.highlights) { %>
-            <% tour.highlights.split('|').forEach(function(h) { %>
+            <% tt(tour, 'highlights').split('|').forEach(function(h) { %>
               <span style="background:#e8f5e9;color:#2e7d32;padding:5px 15px;border-radius:20px;font-size:13px;">🏆 <%= h.trim() %></span>
             <% }) %>
           <% } %>
@@ -70,10 +70,10 @@
     <div>
       <!-- Route -->
       <div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:25px;margin-bottom:20px;">
-        <h3 style="color:#333;margin:0 0 15px;">🗺️ 参考行程</h3>
+        <h3 style="color:#333;margin:0 0 15px;">🗺️ <%= __('tour.route') %></h3>
         <% if (tour.route) { %>
           <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
-            <% tour.route.split('-').forEach(function(r, i) { %>
+            <% tt(tour, 'route').split('-').forEach(function(r, i) { %>
               <span style="background:<%= i % 2 === 0 ? '#e3f2fd' : '#fff3e0' %>;padding:8px 16px;border-radius:20px;font-size:14px;color:#333;"><%= r.trim() %></span>
               <% if (i < tour.route.split('-').length - 1) { %><span style="color:#ccc;">→</span><% } %>
             <% }) %>
@@ -85,17 +85,17 @@
 
       <!-- Transport -->
       <div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:25px;margin-bottom:20px;">
-        <h3 style="color:#333;margin:0 0 15px;">🚌 交通信息</h3>
-        <p style="color:#666;font-size:15px;"><%= tour.transport || '待定' %></p>
-        <h3 style="color:#333;margin:20px 0 15px;">📅 出团日期</h3>
+        <h3 style="color:#333;margin:0 0 15px;">🚌 <%= __('tour.transport') %></h3>
+        <p style="color:#666;font-size:15px;"><%= tt(tour, 'transport') || (isEn ? 'TBD' : '待定') %></p>
+        <h3 style="color:#333;margin:20px 0 15px;">📅 <%= __('tour.days') %></h3>
         <p style="color:#666;font-size:15px;"><%= tour.days || '待定' %></p>
       </div>
 
       <!-- Reviews -->
       <div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:25px;">
-        <h3 style="color:#333;margin:0 0 15px;">💬 用户评价</h3>
+        <h3 style="color:#333;margin:0 0 15px;">💬 <%= __('tour.reviews') %></h3>
         <% if (reviews.length === 0) { %>
-          <p style="color:#999;text-align:center;padding:20px;">暂无评价，快来成为第一个评价的用户吧！</p>
+          <p style="color:#999;text-align:center;padding:20px;"><%= isEn ? 'No reviews yet. Be the first to review!' : '暂无评价，快来成为第一个评价的用户吧！' %></p>
         <% } %>
         <% reviews.forEach(function(r) { %>
           <div style="border-bottom:1px solid #eee;padding:15px 0;">
@@ -159,7 +159,7 @@
             </div>
           <% } %>
         </div>
-        <a href="/book/<%= tour.id %>" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#ff6600,#ff4500);color:#fff;border-radius:6px;font-size:16px;font-weight:bold;text-decoration:none;margin-top:15px;box-shadow:0 4px 10px rgba(255,102,0,0.2);">
+        <a href="/book/<%= tour.id %><%= isEn ? "?lang=en" : "" %>" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#ff6600,#ff4500);color:#fff;border-radius:6px;font-size:16px;font-weight:bold;text-decoration:none;margin-top:15px;box-shadow:0 4px 10px rgba(255,102,0,0.2);">
           🚀 立即预订
         </a>
         <p style="text-align:center;color:#999;font-size:12px;margin-top:10px;">免费咨询：400-888-9999</p>

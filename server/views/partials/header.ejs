@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="<%= lang %>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= typeof title !== 'undefined' ? title : '智慧旅游在线服务平台' %></title>
+  <title><%= typeof title !== 'undefined' ? title : __('site.name') %></title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/swiper-bundle.min.css">
   <style>
-    /* Quick fixes for the responsive rebuild */
     * { box-sizing: border-box; }
     body { font-family: '微软雅黑', 'PingFang SC', 'Helvetica Neue', sans-serif; margin: 0; padding: 0; }
     a { text-decoration: none; color: inherit; }
@@ -28,6 +27,11 @@
     header .header-inner .user-info { color: #fff; font-size: 14px; display: flex; align-items: center; gap: 15px; }
     header .header-inner .user-info a { color: #59b200; }
     header .header-inner .user-info .badge-admin { background: #ff6600; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+    .lang-switch { margin-left: 10px; }
+    .lang-switch a { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; text-decoration: none; }
+    .lang-switch .lang-active { background: #59b200; color: #fff; }
+    .lang-switch .lang-inactive { background: #555; color: #ccc; }
+    .lang-switch .lang-inactive:hover { background: #666; color: #fff; }
     .bottom { background-color: #222; padding: 30px 0; }
     .bottom .bottom-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; padding: 0 15px; }
     .bottom .bottom-inner .footer-col { min-width: 200px; }
@@ -57,33 +61,39 @@
 <body>
   <header>
     <div class="header-inner">
-      <a href="/"><img src="/img/logo.jpg" alt="智慧旅游" height="50" style="margin-top:5px"></a>
-      <% if (user) { %>
-        <div class="user-info">
-          <span>👋 <%= user.username %></span>
-          <% if (user.role === 'admin') { %>
-            <span class="badge-admin">管理员</span>
-            <a href="/admin">后台管理</a>
-          <% } %>
-          <a href="/my-bookings" style="color:#59b200;font-weight:bold;">📋 我的订单</a>
-          <a href="/logout" style="color:#ff6b6b;">退出</a>
+      <a href="/"><img src="/img/logo.jpg" alt="<%= __('site.name') %>" height="50" style="margin-top:5px"></a>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="lang-switch">
+          <a href="/lang/zh" class="<%= isZh ? 'lang-active' : 'lang-inactive' %>">🇨🇳 中文</a>
+          <a href="/lang/en" class="<%= isEn ? 'lang-active' : 'lang-inactive' %>">🇬🇧 EN</a>
         </div>
-      <% } else { %>
-        <ul>
-          <li><a href="/register"><button class="btn-reg">注册</button></a></li>
-          <li><a href="/login"><button class="btn-login">登录</button></a></li>
-          <li><button class="btn-help">帮助</button></li>
-        </ul>
-      <% } %>
+        <% if (user) { %>
+          <div class="user-info">
+            <span>👋 <%= user.username %></span>
+            <% if (user.role === 'admin') { %>
+              <span class="badge-admin"><%= __('header.admin') %></span>
+              <a href="/admin"><%= __('header.adminPanel') %></a>
+            <% } %>
+            <a href="/my-bookings" style="color:#59b200;font-weight:bold;">📋 <%= __('header.myOrders') %></a>
+            <a href="/logout" style="color:#ff6b6b;"><%= __('header.logout') %></a>
+          </div>
+        <% } else { %>
+          <ul>
+            <li><a href="/register"><button class="btn-reg"><%= __('header.register') %></button></a></li>
+            <li><a href="/login"><button class="btn-login"><%= __('header.login') %></button></a></li>
+            <li><a href="/kefu"><button class="btn-help"><%= __('header.help') %></button></a></li>
+          </ul>
+        <% } %>
+      </div>
     </div>
   </header>
 
   <div class="nav">
     <ul>
-      <li class="<%= path === '/' ? 'active' : '' %>"><a href="/">首页</a></li>
-      <li class="<%= path === '/lyzx' ? 'active' : '' %>"><a href="/lyzx">旅游咨询</a></li>
-      <li class="<%= path === '/lywd' ? 'active' : '' %>"><a href="/lywd">旅游问答</a></li>
-      <li class="<%= path === '/zmzg' ? 'active' : '' %>"><a href="/zmzg">最美中国</a></li>
-      <li class="<%= path === '/gwjd' ? 'active' : '' %>"><a href="/gwjd">国外景点</a></li>
+      <li class="<%= path === '/' ? 'active' : '' %>"><a href="/"><%= __('nav.home') %></a></li>
+      <li class="<%= path === '/lyzx' ? 'active' : '' %>"><a href="/lyzx"><%= __('nav.lyzx') %></a></li>
+      <li class="<%= path === '/lywd' ? 'active' : '' %>"><a href="/lywd"><%= __('nav.lywd') %></a></li>
+      <li class="<%= path === '/zmzg' ? 'active' : '' %>"><a href="/zmzg"><%= __('nav.zmzg') %></a></li>
+      <li class="<%= path === '/gwjd' ? 'active' : '' %>"><a href="/gwjd"><%= __('nav.gwjd') %></a></li>
     </ul>
   </div>

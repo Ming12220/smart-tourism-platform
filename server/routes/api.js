@@ -8,7 +8,7 @@ router.get('/tours', (req, res) => {
   const db = getDb();
   const { category, hot, promotion, search, limit } = req.query;
 
-  let sql = `SELECT t.*, c.name as category_name FROM tours t LEFT JOIN categories c ON t.category_id = c.id WHERE 1=1`;
+  let sql = `SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t LEFT JOIN categories c ON t.category_id = c.id WHERE 1=1`;
   const params = [];
 
   if (category) {
@@ -41,7 +41,7 @@ router.get('/tours', (req, res) => {
 router.get('/tours/:id', (req, res) => {
   const db = getDb();
   const tour = db.prepare(`
-    SELECT t.*, c.name as category_name
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en
     FROM tours t LEFT JOIN categories c ON t.category_id = c.id
     WHERE t.id = ?
   `).get(req.params.id);
@@ -156,11 +156,11 @@ router.get('/search', (req, res) => {
 
   const db = getDb();
   const tours = db.prepare(`
-    SELECT t.*, c.name as category_name
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en
     FROM tours t LEFT JOIN categories c ON t.category_id = c.id
-    WHERE t.title LIKE ? OR t.description LIKE ?
+    WHERE t.title LIKE ? OR t.description LIKE ? OR t.title_en LIKE ?
     LIMIT 10
-  `).all(`%${q}%`, `%${q}%`);
+  `).all(`%${q}%`, `%${q}%`, `%${q}%`);
 
   const questions = db.prepare(`
     SELECT * FROM questions WHERE title LIKE ? OR content LIKE ?
@@ -168,6 +168,49 @@ router.get('/search', (req, res) => {
   `).all(`%${q}%`, `%${q}%`);
 
   res.json({ success: true, data: { tours, questions } });
+});
+
+// POST /api/faq — chatbot FAQ query
+router.post('/faq', (req, res) => {
+  const { message } = req.body;
+  if (!message || !message.trim()) {
+    return res.json({ success: true, answer: null });
+  }
+
+  const db = getDb();
+  const msg = message.trim().toLowerCase();
+
+  // Try to match user message against knowledge_base keywords
+  const allFaqs = db.prepare('SELECT * FROM knowledge_base ORDER BY sort_order').all();
+
+  // Score each FAQ by how many keywords match
+  let bestMatch = null;
+  let bestScore = 0;
+
+  for (const faq of allFaqs) {
+    const keywords = faq.keywords.split(/[\s,，]+/);
+    let score = 0;
+    for (const kw of keywords) {
+      if (msg.includes(kw.toLowerCase())) {
+        score++;
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = faq;
+    }
+  }
+
+  if (bestMatch && bestScore > 0) {
+    return res.json({
+      success: true,
+      answer: bestMatch.answer,
+      question: bestMatch.question
+    });
+  }
+
+  // No match — return null so frontend can use fallback reply
+  res.json({ success: true, answer: null });
 });
 
 module.exports = router;
