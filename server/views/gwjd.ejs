@@ -5,54 +5,18 @@
   .gwjd-page { padding-top:60px; max-width:1400px; margin:0 auto; padding-left:15px; padding-right:15px; }
   .gwjd-page h1 { color:#2c3e50; font-size:28px; border-bottom:2px solid #59b200; padding-bottom:15px; margin-bottom:5px; }
   .gwjd-page .subtitle { color:#95a5a6; font-size:14px; margin-top:0; margin-bottom:25px; }
-
-  .section-title {
-    text-align: center;
-    padding: 40px 15px 10px;
-    position: relative;
-  }
-  .section-title h2 { font-size: 28px; color: #2c3e50; margin: 0; font-weight: 700; }
-  .section-title p { color: #95a5a6; font-size: 14px; margin: 8px 0 0; }
-  .section-title::after {
-    content: '';
-    display: block;
-    width: 50px; height: 3px;
-    background: linear-gradient(90deg, #59b200, #ff6600);
-    margin: 12px auto 0;
-    border-radius: 2px;
-  }
-
-  .dest-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-    gap: 16px;
-    padding-bottom: 30px;
-  }
-  .dest-card {
-    background: #fff;
-    border: 1px solid #f0f0f0;
-    border-radius: 12px;
-    padding: 20px 12px;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-  }
-  .dest-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border-color: #ff6600;
-  }
-  .dest-card .emoji { font-size: 36px; margin-bottom: 6px; display: block; }
-  .dest-card .name { font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 4px; }
-  .dest-card .tags { font-size: 12px; color: #95a5a6; }
-
+  .sec-title { text-align:center; padding:40px 15px 10px; position:relative; }
+  .sec-title h2 { font-size:28px; color:#2c3e50; margin:0; font-weight:700; }
+  .sec-title p { color:#95a5a6; font-size:14px; margin:8px 0 0; }
+  .sec-title::after { content:''; display:block; width:50px; height:3px; background:linear-gradient(90deg,#59b200,#ff6600); margin:12px auto 0; border-radius:2px; }
+  .dest-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); gap:16px; padding-bottom:30px; }
+  .dest-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:20px 12px; text-align:center; transition:all 0.3s; cursor:pointer; text-decoration:none; color:inherit; }
+  .dest-card:hover { transform:translateY(-5px); box-shadow:0 10px 30px rgba(0,0,0,0.1); border-color:#ff6600; }
+  .dest-card .emoji { font-size:36px; margin-bottom:6px; display:block; }
+  .dest-card .name { font-size:14px; font-weight:600; color:#2c3e50; margin-bottom:4px; }
+  .dest-card .tags { font-size:12px; color:#95a5a6; }
   .tour-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px; }
-  .tour-card {
-    border:1px solid #eee; border-radius:12px; overflow:hidden; background:#fff;
-    transition:all 0.3s; text-decoration:none; color:inherit; display:block;
-  }
+  .tour-card { border:1px solid #eee; border-radius:12px; overflow:hidden; background:#fff; transition:all 0.3s; text-decoration:none; color:inherit; display:block; }
   .tour-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.1); }
   .tour-card img { width:100%; height:200px; object-fit:cover; transition:transform 0.5s; }
   .tour-card:hover img { transform:scale(1.05); }
@@ -61,46 +25,53 @@
   .tour-card .info p { color:#7f8c8d; font-size:13px; margin:0 0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .tour-card .info .price { color:#ff6600; font-size:18px; font-weight:bold; }
   .tour-card .info .satis { color:#95a5a6; font-size:12px; }
-
   .sidebar-card { border:1px solid #efefef; border-radius:8px; background:#fff; margin-bottom:20px; }
   .sidebar-card .head { padding:10px; background:#fafafa; border-bottom:1px solid #efefef; display:flex; justify-content:space-between; font-size:15px; color:#767676; }
   .sidebar-card .body { padding:10px; }
-
-  @media (max-width: 768px) {
-    .gwjd-page .page-layout { grid-template-columns:1fr; }
+  @media (max-width:768px) {
+    .gwjd-page .page-layout { grid-template-columns:1fr !important; }
     .tour-grid { grid-template-columns:1fr; }
-    .dest-grid { grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); }
+    .dest-grid { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); }
   }
+  .gwjd-table td { padding:6px; font-size:12px; word-break:break-word; }
 </style>
 
 <div class="gwjd-page">
-  <h1>🌏 国外景点</h1>
-  <p class="subtitle">全球热门旅游目的地，开启您的世界之旅</p>
+  <h1>🌏 <%= __('gwjd.title') %></h1>
+  <p class="subtitle"><%= __('gwjd.subtitle') %></p>
 
-  <!-- ====== 全球热门目的地 ====== -->
-  <div class="section-title" style="padding-top:10px;">
-    <h2>📍 全球热门目的地</h2>
-    <p>点击卡片查看详细线路和价格</p>
+  <!-- ====== 热门目的地 ====== -->
+  <div class="sec-title" style="padding-top:10px;">
+    <h2>📍 <%= __('gwjd.hotDest') %></h2>
+    <p><%= __('gwjd.hotDestDesc') %></p>
   </div>
 
   <div class="dest-grid">
     <% var destinations = [
-      {name:'泰国 · 曼谷芭提雅', emoji:'🇹🇭', tourId:1, desc:'大皇宫·人妖秀·泰式按摩'},
-      {name:'马尔代夫 · 双鱼岛', emoji:'🇲🇻', tourId:2, desc:'潜水·海上日落·水屋'},
-      {name:'日本 · 东京富士山', emoji:'🇯🇵', tourId:4, desc:'温泉·樱花·迪士尼'},
-      {name:'巴厘岛 · 蜜月天堂', emoji:'🇮🇩', tourId:6, desc:'海滩·SPA·悬崖酒吧'},
-      {name:'土耳其 · 热气球', emoji:'🇹🇷', tourId:8, desc:'棉花堡·卡帕多奇亚'},
-      {name:'法国 · 浪漫巴黎', emoji:'🇫🇷', tourId:5, desc:'铁塔·卢浮宫·塞纳河'},
-      {name:'瑞士 · 阿尔卑斯山', emoji:'🇨🇭', tourId:5, desc:'少女峰·金色列车'},
-      {name:'意大利 · 古罗马', emoji:'🇮🇹', tourId:5, desc:'斗兽场·威尼斯·教堂'},
-      {name:'迪拜 · 奢华之都', emoji:'🇦🇪', tourId:7, desc:'哈利法塔·棕榈岛'},
-      {name:'塞舌尔 · 天堂群岛', emoji:'🇸🇨', tourId:7, desc:'海滩·浮潜·象龟'},
+      {en:'Thailand · Bangkok', cn:'泰国 · 曼谷芭提雅', emoji:'🇹🇭', tourId:1, enDesc:'Grand Palace · Shows', cnDesc:'大皇宫·人妖秀·泰式按摩'},
+      {en:'Maldives · Olhuveli', cn:'马尔代夫 · 双鱼岛', emoji:'🇲🇻', tourId:2, enDesc:'Diving · Sunsets', cnDesc:'潜水·海上日落·水屋'},
+      {en:'Japan · Tokyo Mt.Fuji', cn:'日本 · 东京富士山', emoji:'🇯🇵', tourId:4, enDesc:'Hotspring · Cherry', cnDesc:'温泉·樱花·迪士尼'},
+      {en:'Bali · Paradise Island', cn:'巴厘岛 · 蜜月天堂', emoji:'🇮🇩', tourId:6, enDesc:'Beach · SPA', cnDesc:'海滩·SPA·悬崖酒吧'},
+      {en:'Turkey · Balloons', cn:'土耳其 · 热气球', emoji:'🇹🇷', tourId:8, enDesc:'Pamukkale · fairy chimneys', cnDesc:'棉花堡·卡帕多奇亚'},
+      {en:'France · Romantic Paris', cn:'法国 · 浪漫巴黎', emoji:'🇫🇷', tourId:5, enDesc:'Eiffel · Louvre', cnDesc:'铁塔·卢浮宫·塞纳河'},
+      {en:'Switzerland · Alps', cn:'瑞士 · 阿尔卑斯山', emoji:'🇨🇭', tourId:5, enDesc:'Jungfrau · Golden Pass', cnDesc:'少女峰·金色列车'},
+      {en:'Italy · Ancient Rome', cn:'意大利 · 古罗马', emoji:'🇮🇹', tourId:5, enDesc:'Colosseum · Venice', cnDesc:'斗兽场·威尼斯·教堂'},
+      {en:'Dubai · Luxury City', cn:'迪拜 · 奢华之都', emoji:'🇦🇪', tourId:7, enDesc:'Burj Khalifa · Desert', cnDesc:'哈利法塔·棕榈岛'},
+      {en:'Seychelles · Paradise', cn:'塞舌尔 · 天堂群岛', emoji:'🇸🇨', tourId:7, enDesc:'Beach · Snorkeling', cnDesc:'海滩·浮潜·象龟'},
+      {en:'Seoul · K-Culture', cn:'首尔 · 韩流之旅', emoji:'🇰🇷', tourId:33, enDesc:'Palace · Shopping', cnDesc:'景福宫·明洞·韩流'},
+      {en:'Singapore · Garden City', cn:'新加坡 · 花园城市', emoji:'🇸🇬', tourId:34, enDesc:'Merlion · Universal', cnDesc:'鱼尾狮·环球影城'},
+      {en:'Phuket · Diving', cn:'普吉岛 · 潜水天堂', emoji:'🇹🇭', tourId:35, enDesc:'Phi Phi · Snorkel', cnDesc:'皇帝岛·皮皮岛·潜水'},
+      {en:'Egypt · Pyramids', cn:'埃及 · 金字塔', emoji:'🇪🇬', tourId:36, enDesc:'Sphinx · Nile Cruise', cnDesc:'金字塔·尼罗河邮轮'},
+      {en:'Australia · Sydney', cn:'澳大利亚 · 悉尼', emoji:'🇦🇺', tourId:37, enDesc:'Opera · Reef', cnDesc:'歌剧院·大堡礁·冲浪'},
+      {en:'New Zealand · South Island', cn:'新西兰 · 南岛星空', emoji:'🇳🇿', tourId:38, enDesc:'Stars · Hobbiton', cnDesc:'蒂卡波星空·霍比屯'},
+      {en:'Nepal · Himalayas', cn:'尼泊尔 · 雪山佛国', emoji:'🇳🇵', tourId:39, enDesc:'Temples · Trekking', cnDesc:'杜巴广场·博卡拉'},
+      {en:'Russia · Moscow', cn:'俄罗斯 · 莫斯科', emoji:'🇷🇺', tourId:40, enDesc:'Red Square · Kremlin', cnDesc:'红场·克里姆林宫'},
     ]; %>
     <% destinations.forEach(function(d) { %>
-      <a href="/tour/<%= d.tourId %>" class="dest-card">
+      <a href="/tour/<%= d.tourId %><%= isEn ? '?lang=en' : '' %>" class="dest-card">
         <span class="emoji"><%= d.emoji %></span>
-        <div class="name"><%= d.name %></div>
-        <div class="tags"><%= d.desc %></div>
+        <div class="name"><%= isEn ? d.en : d.cn %></div>
+        <div class="tags"><%= isEn ? d.enDesc : d.cnDesc %></div>
       </a>
     <% }) %>
   </div>
@@ -108,21 +79,21 @@
   <!-- ====== 线路列表 + 侧边栏 ====== -->
   <div class="page-layout" style="display:grid;grid-template-columns:2fr 1fr;gap:30px;margin-top:10px;">
 
-    <!-- 左侧线路列表 -->
+    <!-- 左侧 -->
     <div>
-      <h2 style="color:#2c3e50;font-size:20px;margin:0 0 5px;">✈️ 精选国外线路</h2>
-      <p style="color:#95a5a6;font-size:13px;margin:0 0 15px;">以下是我们为您精选的出境游线路</p>
+      <h2 style="color:#2c3e50;font-size:20px;margin:0 0 5px;">✈️ <%= __('gwjd.selected') %></h2>
+      <p style="color:#95a5a6;font-size:13px;margin:0 0 15px;"><%= __('gwjd.selectedDesc') %></p>
       <div class="tour-grid">
         <% tours.forEach(function(t) { %>
-          <a href="/tour/<%= t.id %>" class="tour-card">
+          <a href="/tour/<%= t.id %><%= isEn ? '?lang=en' : '' %>" class="tour-card">
             <div style="overflow:hidden;">
               <img src="/img/<%= t.image %>" alt="<%= tt(t, 'title') %>">
             </div>
             <div class="info">
               <h3><%= tt(t, 'title') %></h3>
-              <p><%= (t.description || '').substring(0, 50) %></p>
+              <p><%= (tt(t, 'description') || '').substring(0, 50) %></p>
               <div style="display:flex;justify-content:space-between;align-items:center;">
-                <span class="price">¥<%= t.price %> 起</span>
+                <span class="price">¥<%= t.price %> <%= __('gwjd.from') %></span>
                 <span class="satis">⭐ <%= t.satisfaction %></span>
               </div>
             </div>
@@ -134,20 +105,21 @@
     <!-- 侧边栏 -->
     <div>
       <div class="sidebar-card">
-        <div class="head"><span>🌍 快速导航</span></div>
+        <div class="head">🌍 <%= __('gwjd.quickNav') %></div>
         <div class="body">
-          <table style="width:100%;">
+          <table style="width:100%;" class="gwjd-table">
             <% var navs = [
-              [{name:'🇹🇭 泰国 · 曼谷', id:1, bg:'#fff8e1', color:'#e65100'},{name:'🇯🇵 日本 · 东京', id:4, bg:'#e8f5e9', color:'#2e7d32'}],
-              [{name:'🇮🇩 巴厘岛 · 蜜月', id:6, bg:'#e3f2fd', color:'#1565c0'},{name:'🇲🇻 马尔代夫', id:2, bg:'#fce4ec', color:'#c62828'}],
-              [{name:'🇫🇷 法国 · 巴黎', id:5, bg:'#f3e5f5', color:'#6a1b9a'},{name:'🇨🇭 瑞士 · 雪山', id:5, bg:'#e0f7fa', color:'#006064'}],
-              [{name:'🇹🇷 土耳其 · 热气球', id:8, bg:'#fff3e0', color:'#e65100'},{name:'🇦🇪 迪拜 · 奢华', id:7, bg:'#e8eaf6', color:'#283593'}],
-              [{name:'🇮🇹 意大利 · 罗马', id:5, bg:'#fbe9e7', color:'#bf360c'},{name:'🇸🇨 塞舌尔 · 海岛', id:7, bg:'#e0f2f1', color:'#004d40'}],
+              [{en:'🇹🇭 Thailand', cn:'🇹🇭 泰国 · 曼谷', id:1, bg:'#fff8e1', color:'#e65100'},{en:'🇯🇵 Japan', cn:'🇯🇵 日本 · 东京', id:4, bg:'#e8f5e9', color:'#2e7d32'}],
+              [{en:'🇮🇩 Bali', cn:'🇮🇩 巴厘岛', id:6, bg:'#e3f2fd', color:'#1565c0'},{en:'🇲🇻 Maldives', cn:'🇲🇻 马尔代夫', id:2, bg:'#fce4ec', color:'#c62828'}],
+              [{en:'🇫🇷 Paris', cn:'🇫🇷 法国 · 巴黎', id:5, bg:'#f3e5f5', color:'#6a1b9a'},{en:'🇨🇭 Swiss', cn:'🇨🇭 瑞士 · 雪山', id:5, bg:'#e0f7fa', color:'#006064'}],
+              [{en:'🇹🇷 Turkey', cn:'🇹🇷 土耳其', id:8, bg:'#fff3e0', color:'#e65100'},{en:'🇦🇪 Dubai', cn:'🇦🇪 迪拜', id:7, bg:'#e8eaf6', color:'#283593'}],
+              [{en:'🇰🇷 Seoul', cn:'🇰🇷 首尔', id:33, bg:'#f3e5f5', color:'#6a1b9a'},{en:'🇸🇬 Singapore', cn:'🇸🇬 新加坡', id:34, bg:'#e0f7fa', color:'#006064'}],
+              [{en:'🇪🇬 Egypt', cn:'🇪🇬 埃及', id:36, bg:'#fff3e0', color:'#e65100'},{en:'🇷🇺 Russia', cn:'🇷🇺 俄罗斯', id:40, bg:'#e8eaf6', color:'#283593'}],
             ]; %>
             <% navs.forEach(function(row) { %>
               <tr>
                 <% row.forEach(function(cell) { %>
-                  <td style="padding:8px;background:<%= cell.bg %>;font-size:13px;color:<%= cell.color %>;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/<%= cell.id %>'"><%= cell.name %></td>
+                  <td style="padding:8px;background:<%= cell.bg %>;font-size:13px;color:<%= cell.color %>;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/<%= cell.id %><%= isEn ? '?lang=en' : '' %>'"><%= isEn ? cell.en : cell.cn %></td>
                 <% }) %>
               </tr>
             <% }) %>
@@ -156,36 +128,44 @@
       </div>
 
       <div class="sidebar-card">
-        <div class="head"><span>📷 世界风光</span></div>
+        <div class="head">📷 <%= __('gwjd.gallery') %></div>
         <div class="body" style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
           <% var spots = [
-            {img:'t1.jpg', name:'泰国水上市场', id:1},
-            {img:'t4.jpg', name:'日本富士山', id:4},
-            {img:'t5a.jpg', name:'巴黎铁塔', id:5},
-            {img:'t2.jpg', name:'马尔代夫', id:2},
-            {img:'t5c.jpg', name:'瑞士雪山', id:5},
-            {img:'t6.jpg', name:'巴厘岛日落', id:6}
+            {img:'t1.jpg', en:'Bangkok', cn:'泰国水上市场', id:1},
+            {img:'t4.jpg', en:'Mt.Fuji', cn:'日本富士山', id:4},
+            {img:'t5a.jpg', en:'Eiffel Tower', cn:'巴黎铁塔', id:5},
+            {img:'t2.jpg', en:'Maldives', cn:'马尔代夫', id:2},
+            {img:'t5c.jpg', en:'Swiss Alps', cn:'瑞士雪山', id:5},
+            {img:'t6.jpg', en:'Bali Sunset', cn:'巴厘岛日落', id:6},
+            {img:'tour33.jpg', en:'Seoul', cn:'首尔夜景', id:33},
+            {img:'tour34.jpg', en:'Singapore', cn:'新加坡滨海湾', id:34},
           ]; %>
           <% spots.forEach(function(s) { %>
-            <div style="text-align:center;position:relative;cursor:pointer;" onclick="location.href='/tour/<%= s.id %>'">
-              <img src="/img/<%= s.img %>" alt="<%= s.name %>" style="width:100%;height:80px;object-fit:cover;border-radius:4px;">
-              <span style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.5);color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;"><%= s.name %></span>
+            <div style="text-align:center;position:relative;cursor:pointer;" onclick="location.href='/tour/<%= s.id %><%= isEn ? '?lang=en' : '' %>'">
+              <img src="/img/<%= s.img %>" alt="<%= isEn ? s.en : s.cn %>" style="width:100%;height:80px;object-fit:cover;border-radius:4px;">
+              <span style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.5);color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= isEn ? s.en : s.cn %></span>
             </div>
           <% }) %>
         </div>
       </div>
 
       <div style="background:#f9f9f9;border:1px solid #efefef;border-radius:8px;padding:20px;text-align:center;">
-        <h3 style="color:#333;font-size:16px;margin:0 0 10px;">💼 签证服务</h3>
-        <p style="color:#959595;font-size:13px;">专业签证办理服务，出签率高</p>
+        <h3 style="color:#333;font-size:16px;margin:0 0 10px;">💼 <%= __('gwjd.visaTitle') %></h3>
+        <p style="color:#959595;font-size:13px;"><%= __('gwjd.visaDesc') %></p>
         <div style="text-align:left;font-size:13px;color:#666;margin:10px 0;line-height:1.8;">
-          <p>✅ 泰国落地签 · 说走就走</p>
-          <p>✅ 日本单次/多次签证</p>
-          <p>✅ 申根签证 · 畅游欧洲</p>
-          <p>✅ 美国B1/B2十年签</p>
-          <p>✅ 马尔代夫免签</p>
+          <% var visas = [
+            {en:'✅ Thailand Visa on Arrival', cn:'✅ 泰国落地签 · 说走就走'},
+            {en:'✅ Japan Single/Multi Visa', cn:'✅ 日本单次/多次签证'},
+            {en:'✅ Schengen Visa', cn:'✅ 申根签证 · 畅游欧洲'},
+            {en:'✅ US B1/B2 10-Year Visa', cn:'✅ 美国B1/B2十年签'},
+            {en:'✅ Maldives Visa-Free', cn:'✅ 马尔代夫免签'},
+            {en:'✅ Singapore Visa', cn:'✅ 新加坡签证'},
+          ]; %>
+          <% visas.forEach(function(v) { %>
+            <p><%= isEn ? v.en : v.cn %></p>
+          <% }); %>
         </div>
-        <a href="/kefu" style="display:inline-block;padding:8px 25px;background:#59b200;color:#fff;border-radius:4px;text-decoration:none;margin-top:5px;">💬 咨询客服</a>
+        <a href="/kefu" style="display:inline-block;padding:8px 25px;background:#59b200;color:#fff;border-radius:4px;text-decoration:none;margin-top:5px;">💬 <%= __('gwjd.visaBtn') %></a>
       </div>
     </div>
   </div>

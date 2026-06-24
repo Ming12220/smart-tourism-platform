@@ -309,7 +309,7 @@ app.get('/my-bookings', (req, res) => {
   const { getDb } = require('./database/init');
   const db = getDb();
   const bookings = db.prepare(`
-    SELECT b.*, t.title as tour_title, t.image, t.days, t.type_label
+    SELECT b.*, t.title as tour_title, t.title_en as tour_title_en, t.image, t.days, t.type_label
     FROM bookings b JOIN tours t ON b.tour_id = t.id
     WHERE b.user_id = ? ORDER BY b.created_at DESC
   `).all(req.session.user.id);
