@@ -149,6 +149,9 @@
           <% if (tour.distance) { %>
             <span class="distance-badge">📏 <%= tour.distance %>km</span>
           <% } %>
+          <% if (tour.score && tour.score > 0.6) { %>
+            <span style="position:absolute;top:10px;right:10px;background:#ff6600;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px;">⭐ <%= isEn ? 'Best Pick' : '优选推荐' %></span>
+          <% } %>
         </div>
         <div class="card-body">
           <h3><%= tt(tour, 'title') %></h3>

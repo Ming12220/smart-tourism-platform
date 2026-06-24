@@ -112,7 +112,7 @@ app.get('/', (req, res) => {
     recommendReasons[t.id] = getRecommendReason(t.id, req.session);
   });
 
-  // Get nearby tours (via session location if available)
+  // Get nearby tours (via session location if available) — sorted by distance + price
   let nearbyTours = [];
   if (req.session?.userLocation) {
     const { lat, lng } = req.session.userLocation;
@@ -131,10 +131,20 @@ app.get('/', (req, res) => {
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
     
+    const maxDist = 500;
+    const maxPrice = Math.max(...allLocated.map(t => t.price));
+    
     nearbyTours = allLocated
-      .map(t => ({ ...t, distance: Math.round(haversine(lat, lng, t.latitude, t.longitude) * 10) / 10 }))
-      .filter(t => t.distance <= 500)
-      .sort((a, b) => a.distance - b.distance)
+      .map(t => {
+        const dist = Math.round(haversine(lat, lng, t.latitude, t.longitude) * 10) / 10;
+        const distScore = dist <= maxDist ? 1 - (dist / maxDist) : 0;
+        const priceScore = 1 - (t.price / maxPrice);
+        // Score: 70% distance + 30% price — closer & cheaper wins
+        const score = distScore * 0.7 + priceScore * 0.3;
+        return { ...t, distance: dist, score: Math.round(score * 100) / 100 };
+      })
+      .filter(t => t.distance <= maxDist)
+      .sort((a, b) => b.score - a.score)
       .slice(0, 4);
   }
 
@@ -333,14 +343,33 @@ app.get('/nearby', (req, res) => {
   const { getDb } = require('./database/init');
   const db = getDb();
 
-  // Get all located tours grouped by city
+  // Get all located tours
   const tours = db.prepare(`
     SELECT t.*, c.name as category_name, c.name_en as category_name_en 
     FROM tours t 
     LEFT JOIN categories c ON t.category_id = c.id 
     WHERE t.latitude != 0 AND t.longitude != 0
-    ORDER BY t.city, t.is_hot DESC
+    ORDER BY t.is_hot DESC
   `).all();
+
+  // If user has location, compute distance + price score and sort
+  var userLocation = req.session?.userLocation || null;
+  if (userLocation) {
+    function haversine(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+    var maxPrice = 0;
+    tours.forEach(function(t) { if (t.price > maxPrice) maxPrice = t.price; });
+    tours.forEach(function(t) {
+      t.distance = Math.round(haversine(userLocation.latitude, userLocation.longitude, t.latitude, t.longitude) * 10) / 10;
+      t.score = Math.round(((1 - Math.min(t.distance, 500) / 500) * 0.7 + (1 - t.price / maxPrice) * 0.3) * 100) / 100;
+    });
+    tours.sort(function(a, b) { return b.score - a.score; });
+  }
 
   // Group by city
   const cityMap = {};
@@ -354,7 +383,7 @@ app.get('/nearby', (req, res) => {
     tours,
     cityGroups: Object.entries(cityMap),
     totalCities: Object.keys(cityMap).length,
-    userLocation: req.session?.userLocation || null
+    userLocation: userLocation
   });
 });
 

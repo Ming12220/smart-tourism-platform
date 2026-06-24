@@ -2,6 +2,12 @@
 <%- include('partials/header', { path, title }) %>
 
 <style>
+/* === Scroll Progress === */
+#scrollProgress {
+  position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--green),var(--orange));
+  z-index:9999; width:0%; transition:width 0.1s;
+}
+
 /* === Global === */
 body { background:#fafbfc; }
 :root {
@@ -10,10 +16,27 @@ body { background:#fafbfc; }
   --shadow-hover: 0 12px 40px rgba(0,0,0,0.10);
 }
 
+/* Card entrance animation */
+.tour-card { animation:fadeUp 0.5s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.tour-card:nth-child(1) { animation-delay:0s; }
+.tour-card:nth-child(2) { animation-delay:0.05s; }
+.tour-card:nth-child(3) { animation-delay:0.1s; }
+.tour-card:nth-child(4) { animation-delay:0.15s; }
+.tour-card:nth-child(5) { animation-delay:0.2s; }
+.tour-card:nth-child(6) { animation-delay:0.25s; }
+.tour-card:nth-child(7) { animation-delay:0.3s; }
+.tour-card:nth-child(8) { animation-delay:0.35s; }
+.tour-card:nth-child(9) { animation-delay:0.4s; }
+
 /* === Hero === */
 .hero-section {
-  position:relative; width:100%; height:78vh; min-height:480px; max-height:680px; overflow:hidden;
+  position:relative; width:100%; height:72vh; min-height:460px; max-height:640px; overflow:hidden;
   margin-bottom:0;
+}
+.hero-section::after {
+  content:''; position:absolute; inset:0; z-index:1;
+  background: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 80px);
 }
 .hero-section .swiper-slide img {
   width:100%; height:100%; object-fit:cover; filter:brightness(0.6) saturate(1.1);
@@ -21,84 +44,88 @@ body { background:#fafbfc; }
 }
 .swiper-slide-active img { transform:scale(1.05); }
 .hero-overlay {
-  position:absolute; inset:0;
-  background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.3) 100%);
-  z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+  position:absolute; inset:0; z-index:3;
+  background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.3) 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
 }
 .hero-overlay h1 {
-  color:#fff; font-size:clamp(28px,5vw,52px); font-weight:800; text-shadow:0 4px 30px rgba(0,0,0,0.4);
-  margin-bottom:8px; text-align:center; letter-spacing:-0.5px;
+  color:#fff; font-size:clamp(26px,4.5vw,48px); font-weight:800; text-shadow:0 4px 30px rgba(0,0,0,0.4);
+  margin-bottom:6px; text-align:center; letter-spacing:-0.5px;
 }
 .hero-overlay p {
-  color:rgba(255,255,255,0.85); font-size:clamp(14px,1.6vw,18px); margin-bottom:28px; text-align:center;
+  color:rgba(255,255,255,0.85); font-size:clamp(14px,1.4vw,17px); margin-bottom:24px; text-align:center;
 }
 .hero-search {
-  display:flex; max-width:580px; width:90%;
+  display:flex; max-width:540px; width:90%;
   background:rgba(255,255,255,0.96); border-radius:50px; overflow:hidden;
   box-shadow:0 8px 40px rgba(0,0,0,0.18); transition:0.3s;
 }
 .hero-search:focus-within { box-shadow:0 8px 50px rgba(0,0,0,0.28); transform:scale(1.01); }
 .hero-search input {
-  flex:1; border:none; padding:15px 24px; font-size:15px; outline:none; background:transparent;
+  flex:1; border:none; padding:14px 22px; font-size:15px; outline:none; background:transparent;
 }
 .hero-search button {
-  padding:15px 32px; background:linear-gradient(135deg,#ff6600,#ff4500);
-  color:#fff; border:none; font-size:15px; font-weight:700; cursor:pointer; transition:0.3s;
+  padding:14px 28px; background:linear-gradient(135deg,#ff6600,#ff4500);
+  color:#fff; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:0.3s;
 }
 .hero-search button:hover { opacity:0.9; }
 
 /* Quick interest chips in hero */
 .hero-chips {
-  display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:20px; max-width:600px;
+  display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-top:16px; max-width:500px;
 }
 .hero-chip {
-  padding:6px 16px; border-radius:20px; font-size:13px; cursor:pointer;
-  background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.9);
-  border:1px solid rgba(255,255,255,0.2); transition:all 0.25s; user-select:none;
+  padding:5px 14px; border-radius:20px; font-size:12px; cursor:pointer;
+  background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.85);
+  border:1px solid rgba(255,255,255,0.15); transition:all 0.25s; user-select:none;
 }
-.hero-chip:hover { background:rgba(255,255,255,0.25); border-color:rgba(255,255,255,0.4); }
+.hero-chip:hover { background:rgba(255,255,255,0.22); border-color:rgba(255,255,255,0.35); }
 .hero-chip.active { background:#fff; color:var(--orange); border-color:#fff; font-weight:600; }
 
 /* === Section Titles (compact) === */
 .sec-title {
-  text-align:center; padding:35px 15px 6px; position:relative;
+  text-align:center; padding:30px 15px 4px; position:relative;
 }
 .sec-title .label {
-  display:inline-flex; align-items:center; gap:8px; font-size:26px; font-weight:700; color:var(--dark);
+  display:inline-flex; align-items:center; gap:8px; font-size:24px; font-weight:700; color:var(--dark);
   margin:0;
 }
 .sec-title .label .bar {
-  display:inline-block; width:8px; height:28px; border-radius:4px;
+  display:inline-block; width:6px; height:24px; border-radius:3px;
   background:linear-gradient(180deg,var(--green),var(--orange));
 }
-.sec-title .sub { color:#94a3b8; font-size:14px; margin:6px 0 0; }
+.sec-title .sub { color:#94a3b8; font-size:13px; margin:5px 0 0; }
 
-/* === Quick Section Nav === */
+/* === Quick Section Nav (sticky) === */
+.sec-nav-wrap {
+  position:sticky; top:0; z-index:50; background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(8px); border-bottom:1px solid #f1f5f9; padding:6px 0;
+}
 .sec-nav {
-  display:flex; justify-content:center; gap:6px; flex-wrap:wrap;
-  padding:8px 15px 4px; max-width:900px; margin:0 auto;
+  display:flex; justify-content:center; gap:5px; flex-wrap:wrap;
+  max-width:900px; margin:0 auto; padding:0 15px;
 }
 .sec-nav a {
-  padding:7px 18px; border-radius:20px; font-size:13px; font-weight:500;
-  text-decoration:none; color:#64748b; background:#fff; border:1px solid #e2e8f0;
-  transition:all 0.2s; display:flex; align-items:center; gap:5px;
+  padding:6px 16px; border-radius:20px; font-size:12px; font-weight:500;
+  text-decoration:none; color:#64748b; background:transparent; border:1px solid #e2e8f0;
+  transition:all 0.2s; display:flex; align-items:center; gap:4px;
 }
 .sec-nav a:hover { border-color:var(--green); color:var(--green); background:#f0fdf4; }
 
-/* === Stats Bar (icon-driven) === */
+/* === Stats Bar === */
 .stats-bar {
-  display:flex; justify-content:center; gap:40px; padding:28px 15px;
+  display:flex; justify-content:center; gap:30px; padding:22px 15px;
   background:#fff; border-bottom:1px solid #f1f5f9; flex-wrap:wrap;
 }
-.stats-bar .stat-item { text-align:center; min-width:100px; }
-.stats-bar .stat-item .icon { font-size:28px; display:block; margin-bottom:4px; }
-.stats-bar .stat-item .num { font-size:28px; font-weight:800; color:var(--green); line-height:1.2; }
-.stats-bar .stat-item .label { font-size:12px; color:#94a3b8; margin-top:2px; }
+.stats-bar .stat-item { text-align:center; min-width:80px; }
+.stats-bar .stat-item .icon { font-size:24px; display:block; margin-bottom:2px; }
+.stats-bar .stat-item .num { font-size:24px; font-weight:800; color:var(--green); line-height:1.2; }
+.stats-bar .stat-item .label { font-size:11px; color:#94a3b8; margin-top:2px; }
 
-/* === Tour Grid — Card v2 === */
+/* === Tour Grid === */
 .tour-grid {
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:22px;
-  max-width:1400px; margin:0 auto; padding:14px 15px 6px;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px;
+  max-width:1400px; margin:0 auto; padding:12px 15px 4px;
 }
 .tour-card {
   background:#fff; border-radius:var(--radius); overflow:hidden;
@@ -106,10 +133,10 @@ body { background:#fafbfc; }
   border:1px solid #f0f0f0; display:flex; flex-direction:column; height:100%;
 }
 .tour-card:hover {
-  transform:translateY(-5px); box-shadow:var(--shadow-hover);
+  transform:translateY(-4px); box-shadow:0 8px 30px rgba(0,0,0,0.08), 0 0 0 1px rgba(89,178,0,0.1);
 }
 .tour-card .card-img {
-  position:relative; height:200px; overflow:hidden; flex-shrink:0;
+  position:relative; height:190px; overflow:hidden; flex-shrink:0;
 }
 .tour-card .card-img img {
   width:100%; height:100%; object-fit:cover; transition:transform 0.6s;
@@ -117,145 +144,140 @@ body { background:#fafbfc; }
 .tour-card:hover .card-img img { transform:scale(1.08); }
 .tour-card .card-img .tag {
   position:absolute; top:10px; left:0; background:var(--green); color:#fff;
-  padding:3px 12px; font-size:11px; font-weight:600; border-radius:0 4px 4px 0;
+  padding:3px 10px; font-size:11px; font-weight:600; border-radius:0 4px 4px 0;
 }
 .tour-card .card-img .tag-promo {
   position:absolute; top:10px; right:10px; background:var(--orange); color:#fff;
-  padding:2px 10px; font-size:11px; font-weight:600; border-radius:4px;
+  padding:2px 8px; font-size:10px; font-weight:600; border-radius:4px;
   box-shadow:0 2px 8px rgba(255,102,0,0.3);
 }
 .tour-card .card-img .badge-overlay {
-  position:absolute; bottom:10px; left:10px; right:10px;
-  display:flex; gap:6px; flex-wrap:wrap;
+  position:absolute; bottom:8px; left:8px; right:8px;
+  display:flex; gap:5px; flex-wrap:wrap;
 }
 .tour-card .card-img .badge-overlay span {
-  background:rgba(0,0,0,0.55); color:#fff; padding:2px 10px; border-radius:12px;
-  font-size:11px; font-weight:500; backdrop-filter:blur(4px);
+  background:rgba(0,0,0,0.5); color:#fff; padding:2px 8px; border-radius:10px;
+  font-size:10px; font-weight:500; backdrop-filter:blur(3px);
 }
-.tour-card .card-body { padding:16px 18px; flex:1; display:flex; flex-direction:column; }
+.tour-card .card-body { padding:14px 16px; flex:1; display:flex; flex-direction:column; }
 .tour-card .card-body h3 {
-  font-size:15px; color:var(--dark); margin:0 0 6px; font-weight:600;
+  font-size:14px; color:var(--dark); margin:0 0 5px; font-weight:600;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .tour-card .card-body .desc {
-  color:#94a3b8; font-size:13px; line-height:1.5; margin:0 0 10px; flex:1;
+  color:#94a3b8; font-size:12px; line-height:1.5; margin:0 0 8px; flex:1;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
 .tour-card .card-body .meta {
   display:flex; justify-content:space-between; align-items:center;
-  padding-top:12px; border-top:1px solid #f1f5f9; margin-top:auto;
+  padding-top:10px; border-top:1px solid #f1f5f9; margin-top:auto;
 }
-.tour-card .card-body .meta .price { color:var(--orange); font-size:13px; font-weight:600; }
-.tour-card .card-body .meta .price b { font-size:20px; }
-.tour-card .card-body .meta .rating { color:#94a3b8; font-size:12px; }
+.tour-card .card-body .meta .price { color:var(--orange); font-size:12px; font-weight:600; }
+.tour-card .card-body .meta .price b { font-size:18px; }
+.tour-card .card-body .meta .rating { color:#94a3b8; font-size:11px; }
 
-/* === Featured card (first 3 in hot section) === */
-.tour-card.featured { grid-column:span 1; }
-.tour-card.featured .card-img { height:240px; }
+/* === Featured card === */
+.tour-card.featured .card-img { height:220px; }
 @media (min-width:1100px) {
   .tour-card.featured:first-child { grid-column:span 2; }
-  .tour-card.featured:first-child .card-img { height:280px; }
+  .tour-card.featured:first-child .card-img { height:260px; }
 }
 
-/* === Promo ribbon === */
+/* === Promo === */
 .promo-wrap {
   background:linear-gradient(135deg,#fff8f0 0%,#fff0e0 100%);
-  padding:6px 0 28px; margin-top:10px;
+  padding:4px 0 20px; margin-top:6px; border-radius:0;
 }
 
-/* === Destination chips (replaces old grid) === */
+/* === Dest chips === */
 .dest-chips {
-  display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
-  max-width:1300px; margin:12px auto 10px; padding:0 15px;
+  display:flex; flex-wrap:wrap; justify-content:center; gap:8px;
+  max-width:1200px; margin:10px auto; padding:0 15px;
 }
 .dest-chip {
-  display:flex; align-items:center; gap:6px; padding:8px 16px;
-  background:#fff; border:1px solid #e2e8f0; border-radius:30px;
-  text-decoration:none; transition:all 0.2s; font-size:13px; color:var(--dark);
-  box-shadow:0 1px 4px rgba(0,0,0,0.03);
+  display:inline-flex; align-items:center; gap:4px; padding:6px 14px;
+  background:#fff; border:1px solid #e2e8f0; border-radius:20px;
+  text-decoration:none; transition:all 0.2s; font-size:12px; color:var(--dark);
 }
 .dest-chip:hover {
   border-color:var(--green); background:#f0fdf4; transform:translateY(-2px);
-  box-shadow:0 6px 20px rgba(89,178,0,0.12);
+  box-shadow:0 4px 12px rgba(89,178,0,0.1);
 }
-.dest-chip .emoji { font-size:18px; }
 .dest-chip .name { font-weight:500; }
-.dest-chip .sub { color:#94a3b8; font-size:11px; }
+.dest-chip .sub { color:#94a3b8; font-size:10px; }
 
-/* === CTA Banner === */
-.cta-banner {
-  max-width:1350px; margin:24px auto; padding:0 15px;
-}
+/* === CTA === */
+.cta-banner { max-width:1350px; margin:20px auto; padding:0 15px; }
 .cta-inner {
   background:linear-gradient(135deg,#1a2332 0%,#2d3a4a 100%);
-  border-radius:20px; padding:32px 40px; display:flex;
-  justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;
-  box-shadow:0 10px 35px rgba(26,35,50,0.2); position:relative; overflow:hidden;
+  border-radius:16px; padding:28px 36px; display:flex;
+  justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+  box-shadow:0 8px 30px rgba(26,35,50,0.15); position:relative; overflow:hidden;
 }
 .cta-inner::before {
-  content:''; position:absolute; top:-50%; right:-30%; width:300px; height:300px;
-  background:radial-gradient(circle,rgba(89,178,0,0.1),transparent);
+  content:''; position:absolute; top:-40%; right:-20%; width:250px; height:250px;
+  background:radial-gradient(circle,rgba(89,178,0,0.08),transparent);
   border-radius:50%;
 }
-.cta-text h3 { font-size:18px; font-weight:700; color:#fff; margin:0 0 4px; }
-.cta-text p { font-size:13px; color:rgba(255,255,255,0.7); margin:0; }
-.cta-phone { text-align:right; }
-.cta-phone .num { font-size:20px; font-weight:700; color:var(--orange); }
-.cta-phone .hours { font-size:11px; color:rgba(255,255,255,0.5); }
+.cta-text h3 { font-size:17px; font-weight:700; color:#fff; margin:0 0 3px; }
+.cta-text p { font-size:12px; color:rgba(255,255,255,0.65); margin:0; }
+.cta-phone .num { font-size:18px; font-weight:700; color:var(--orange); }
+.cta-phone .hours { font-size:11px; color:rgba(255,255,255,0.45); }
 .cta-btn {
-  background:linear-gradient(135deg,var(--orange),#ff4500); color:#fff; padding:10px 26px;
-  border-radius:30px; font-size:14px; font-weight:700; text-decoration:none; transition:0.3s;
-  box-shadow:0 4px 15px rgba(255,102,0,0.3);
+  background:linear-gradient(135deg,var(--orange),#ff4500); color:#fff; padding:9px 22px;
+  border-radius:25px; font-size:13px; font-weight:700; text-decoration:none; transition:0.3s;
+  box-shadow:0 4px 12px rgba(255,102,0,0.25);
 }
 .cta-btn:hover { transform:scale(1.04); }
 
-/* === Floating === */
+/* === Float === */
 .float-btn {
-  position:fixed; width:44px; height:44px; right:20px; z-index:999;
+  position:fixed; width:40px; height:40px; right:18px; z-index:999;
   border-radius:50%; display:flex; align-items:center; justify-content:center;
-  text-decoration:none; border:none; cursor:pointer; color:#fff; font-size:18px;
-  box-shadow:0 4px 15px rgba(0,0,0,0.2); transition:all 0.3s;
+  text-decoration:none; border:none; cursor:pointer; color:#fff; font-size:16px;
+  box-shadow:0 3px 12px rgba(0,0,0,0.18); transition:all 0.3s;
 }
 .float-btn:hover { transform:translateY(-3px); }
-.float-top { bottom:28px; background:var(--dark); display:none; }
-.float-kefu { bottom:82px; background:linear-gradient(135deg,var(--orange),#ff4500); }
+.float-top { bottom:25px; background:var(--dark); display:none; }
+.float-kefu { bottom:75px; background:linear-gradient(135deg,var(--orange),#ff4500); }
 
 /* === Nearby === */
-.nearby-bar {
-  display:flex; justify-content:center; gap:12px; flex-wrap:wrap;
-  padding:18px 15px; max-width:1400px; margin:0 auto;
-}
+.nearby-bar { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; padding:14px 15px; max-width:1400px; margin:0 auto; }
 .nearby-btn {
-  display:inline-flex; align-items:center; gap:6px;
-  padding:10px 24px; background:var(--blue); color:#fff;
-  border:none; border-radius:30px; font-size:14px; font-weight:600; cursor:pointer;
-  transition:0.3s; box-shadow:0 4px 15px rgba(26,115,232,0.25);
+  display:inline-flex; align-items:center; gap:5px;
+  padding:9px 22px; background:var(--blue); color:#fff;
+  border:none; border-radius:25px; font-size:13px; font-weight:600; cursor:pointer;
+  transition:0.3s; box-shadow:0 3px 12px rgba(26,115,232,0.2);
 }
-.nearby-btn:hover { transform:translateY(-2px); opacity:0.92; }
-.nearby-link { color:var(--blue); font-size:13px; text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+.nearby-btn:hover { transform:translateY(-2px); }
+.nearby-link { color:var(--blue); font-size:12px; text-decoration:none; display:inline-flex; align-items:center; gap:3px; }
 
 /* === Responsive === */
 @media (max-width:768px) {
-  .hero-section { height:60vh; min-height:420px; }
-  .hero-overlay h1 { font-size:26px; }
-  .hero-search input { padding:12px 16px; font-size:14px; }
-  .hero-search button { padding:12px 20px; font-size:14px; }
-  .hero-chips { gap:6px; }
-  .hero-chip { padding:4px 12px; font-size:12px; }
-  .tour-grid { grid-template-columns:1fr; gap:16px; }
-  .tour-card.featured:first-child .card-img { height:220px; }
-  .sec-title .label { font-size:20px; }
-  .stats-bar { gap:16px; padding:20px 10px; }
-  .stats-bar .stat-item { min-width:70px; }
-  .stats-bar .stat-item .num { font-size:22px; }
-  .cta-inner { flex-direction:column; text-align:center; padding:24px 20px; }
+  .hero-section { height:55vh; min-height:380px; }
+  .hero-overlay h1 { font-size:24px; }
+  .hero-search input { padding:10px 14px; font-size:13px; }
+  .hero-search button { padding:10px 16px; font-size:13px; }
+  .hero-chips { gap:5px; }
+  .hero-chip { padding:3px 10px; font-size:11px; }
+  .tour-grid { grid-template-columns:1fr; gap:14px; }
+  .tour-card.featured:first-child .card-img { height:200px; }
+  .sec-title .label { font-size:19px; }
+  .stats-bar { gap:8px; padding:15px 8px; }
+  .stats-bar .stat-item { min-width:60px; }
+  .stats-bar .stat-item .num { font-size:18px; }
+  .stats-bar .stat-item .label { font-size:10px; }
+  .cta-inner { flex-direction:column; text-align:center; padding:20px; }
   .cta-phone { text-align:center; }
-  .dest-chips { gap:8px; }
-  .dest-chip { font-size:12px; padding:6px 12px; }
-  .sec-nav { gap:4px; }
-  .sec-nav a { font-size:12px; padding:5px 12px; }
+  .dest-chips { gap:6px; }
+  .dest-chip { font-size:11px; padding:5px 10px; }
+  .sec-nav-wrap { position:relative; }
+  .sec-nav a { font-size:11px; padding:4px 10px; }
 }
 </style>
+
+<!-- ========== SCROLL PROGRESS ========== -->
+<div id="scrollProgress"></div>
 
 <!-- ========== HERO ========== -->
 <div class="hero-section">
@@ -303,7 +325,8 @@ body { background:#fafbfc; }
   <div class="stat-item"><span class="icon">💰</span><div class="num"><%= (typeof bookingCount !== 'undefined' ? (bookingCount * 2500).toFixed(0) : '9999+') %></div><div class="label"><%= isEn ? 'Served' : '服务人次' %></div></div>
 </div>
 
-<!-- ========== QUICK NAV ========== -->
+<!-- ========== QUICK NAV (sticky) ========== -->
+<div class="sec-nav-wrap">
 <div class="sec-nav">
   <a href="#sec-hot">🔥 <%= isEn ? 'Hot' : '热门线路' %></a>
   <a href="#sec-promo">💰 <%= isEn ? 'Deals' : '限时特惠' %></a>
@@ -311,6 +334,7 @@ body { background:#fafbfc; }
   <a href="#sec-nearby">📍 <%= isEn ? 'Nearby' : '周边游' %></a>
   <a href="#sec-dest">🌍 <%= isEn ? 'Destinations' : '目的地' %></a>
   <a href="/nearby" style="border-color:var(--blue);color:var(--blue);">📍 <%= isEn ? 'All Nearby' : '完整周边' %></a>
+</div>
 </div>
 
 <!-- ========== HOT TOURS ========== -->
@@ -472,7 +496,7 @@ body { background:#fafbfc; }
   </a>
 </div>
 
-<!-- ========== DESTINATIONS (compact chips) ========== -->
+<!-- ========== DESTINATIONS + CATEGORIES (merged) ========== -->
 <div class="sec-title" id="sec-dest">
   <h2 class="label"><span class="bar"></span>🌍 <%= isEn ? 'Popular Destinations' : '热门目的地' %></h2>
   <p class="sub"><%= isEn ? 'Explore popular destinations' : '精选全球热门目的地，点击查看详情' %></p>
@@ -488,28 +512,20 @@ body { background:#fafbfc; }
     {en:'Guilin', cn:'桂林 🎋', tourId:15, subEn:'Li River', subCn:'漓江·阳朔'},
     {en:'Xi\'an', cn:'西安 🛕', tourId:16, subEn:'Terracotta', subCn:'兵马俑·古城墙'},
     {en:'Xishuangbanna', cn:'西双版纳 🌺', tourId:17, subEn:'Rainforest', subCn:'野象谷·傣族'},
-    {en:'Wuzhen', cn:'乌镇 🏘️', tourId:18, subEn:'Water Town', subCn:'西栅·水乡'},
-    {en:'Forbidden City', cn:'故宫 🏰', tourId:19, subEn:'Imperial Palace', subCn:'紫禁城·三大殿'},
     {en:'Chengdu', cn:'成都 🐼', tourId:23, subEn:'Pandas', subCn:'熊猫·都江堰'},
     {en:'Chongqing', cn:'重庆 🌃', tourId:24, subEn:'Mountain City', subCn:'洪崖洞·火锅'},
-    {en:'Kunming', cn:'昆明 🌸', tourId:21, subEn:'Spring City', subCn:'石林·滇池'},
     {en:'Dali', cn:'大理 🌙', tourId:32, subEn:'Erhai Lake', subCn:'洱海·苍山'},
     {en:'Hangzhou', cn:'杭州 🏯', tourId:26, subEn:'West Lake', subCn:'西湖·灵隐'},
     {en:'Suzhou', cn:'苏州 🏡', tourId:27, subEn:'Gardens', subCn:'园林·周庄'},
     {en:'Dunhuang', cn:'敦煌 🎨', tourId:30, subEn:'Mogao Caves', subCn:'莫高窟·鸣沙山'},
     {en:'Lhasa', cn:'拉萨 🙏', tourId:29, subEn:'Tibet', subCn:'布达拉宫·圣湖'},
     {en:'Xiamen', cn:'厦门 🏝️', tourId:25, subEn:'Gulangyu', subCn:'鼓浪屿·文艺'},
-    {en:'Qingdao', cn:'青岛 🏖️', tourId:28, subEn:'Beer & Beach', subCn:'崂山·啤酒'},
-    {en:'Ningxia', cn:'宁夏 🏜️', tourId:20, subEn:'Desert', subCn:'沙坡头·西夏'},
-    {en:'Harbin', cn:'哈尔滨 ❄️', tourId:31, subEn:'Ice City', subCn:'冰雪大世界'},
-    {en:'Bangkok', cn:'曼谷 🇹🇭', tourId:1, subEn:'Grand Palace', subCn:'大皇宫·美食'},
     {en:'Seoul', cn:'首尔 🇰🇷', tourId:33, subEn:'K-Culture', subCn:'景福宫·韩流'},
     {en:'Singapore', cn:'新加坡 🇸🇬', tourId:34, subEn:'Garden City', subCn:'鱼尾狮·环球'},
+    {en:'Bangkok', cn:'曼谷 🇹🇭', tourId:1, subEn:'Grand Palace', subCn:'大皇宫·美食'},
+    {en:'Tokyo', cn:'东京 🗾', tourId:4, subEn:'Mt.Fuji', subCn:'富士山·温泉'},
     {en:'Maldives', cn:'马尔代夫 🇲🇻', tourId:2, subEn:'Diving', subCn:'潜水·日落'},
-    {en:'Japan', cn:'日本 🗾', tourId:4, subEn:'Mt.Fuji', subCn:'富士山·温泉'},
     {en:'Bali', cn:'巴厘岛 🌺', tourId:6, subEn:'Paradise', subCn:'海滩·SPA'},
-    {en:'Phuket', cn:'普吉岛 🏝️', tourId:35, subEn:'Islands', subCn:'皇帝岛·潜水'},
-    {en:'Turkey', cn:'土耳其 🎈', tourId:8, subEn:'Balloons', subCn:'热气球·棉花堡'},
     {en:'Egypt', cn:'埃及 🔺', tourId:36, subEn:'Pyramids', subCn:'金字塔·尼罗河'},
     {en:'Moscow', cn:'俄罗斯 🏛️', tourId:40, subEn:'Red Square', subCn:'红场·冬宫'},
   ]; %>
@@ -519,21 +535,8 @@ body { background:#fafbfc; }
       <span class="sub"><%= isEn ? d.subEn : d.subCn %></span>
     </a>
   <% }) %>
-</div>
-
-<!-- ========== CATEGORIES (inline) ========== -->
-<div class="sec-title" style="padding-top:10px;">
-  <h2 class="label"><span class="bar"></span>📂 <%- isEn ? 'Categories' : '线路分类' %></h2>
-</div>
-<div class="dest-chips" style="padding-bottom:20px;">
   <% categories.forEach(function(cat) { %>
-    <a href="/<%= isEn ? 'gwjd' : 'zmzg' %>" class="dest-chip">
-      <span class="emoji">
-        <% if (cat.slug === 'domestic-long' || cat.slug === 'domestic-short') { %>🏔️<% } %>
-        <% if (cat.slug === 'abroad-long') { %>🌍<% } %>
-        <% if (cat.slug === 'self-tour') { %>🚶<% } %>
-        <% if (cat.slug === 'cruise') { %>🚢<% } %>
-      </span>
+    <a href="/<%= isEn ? 'gwjd' : 'zmzg' %>" class="dest-chip" style="background:#f8fafc;border-style:dashed;">
       <span class="name"><%= __('cat_' + cat.slug) %></span>
     </a>
   <% }) %>
@@ -545,6 +548,14 @@ body { background:#fafbfc; }
 <a href="/kefu" class="float-btn float-kefu" title="<%= isEn ? 'Customer Service' : '在线客服' %>">💬</a>
 
 <script>
+  // Scroll progress bar
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement;
+    var pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    var bar = document.getElementById('scrollProgress');
+    if(bar) bar.style.width = pct + '%';
+  });
+
   // Swiper
   var swiper = new Swiper('.swiper-container', {
     pagination:{el:'.swiper-pagination',clickable:true},
@@ -562,36 +573,37 @@ body { background:#fafbfc; }
   function goSearch(){
     var q = document.getElementById('searchInput').value.trim();
     if(!q){ document.getElementById('searchInput').focus(); return false; }
-    var lang = '<%= lang %>' === 'en' ? '?lang=en' : '';
-    window.location.href = '/search?q=' + encodeURIComponent(q) + lang;
+    window.location.href = '/search?q=' + encodeURIComponent(q) + ('<%= lang %>' === 'en' ? '&lang=en' : '');
     return false;
   }
-  document.getElementById('searchInput').addEventListener('keydown', function(e){
-    if(e.key === 'Enter'){ e.preventDefault(); goSearch(); }
-  });
+  if(document.getElementById('searchInput')) {
+    document.getElementById('searchInput').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ e.preventDefault(); goSearch(); }
+    });
+  }
 
-  // === Hero chips: toggle interest ===
-  var heroChips = document.querySelectorAll('.hero-chip');
+  // === Hero chips ===
   var selectedHeroChips = [];
   <%
     var savedChips = (typeof userInterests !== 'undefined' ? userInterests : []);
     savedChips.forEach(function(k) { %>selectedHeroChips.push('<%= k %>');<% });
   %>
-  function toggleHeroChip(el){
+  window.toggleHeroChip = function(el){
     var key = el.getAttribute('data-key');
     var idx = selectedHeroChips.indexOf(key);
     if(idx >= 0){ selectedHeroChips.splice(idx,1); el.classList.remove('active'); }
     else { selectedHeroChips.push(key); el.classList.add('active'); }
-    // Auto-save to server
     fetch('/api/preferences', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({interests:selectedHeroChips})
     }).catch(function(){});
-  }
+  };
 
   // Nearby location
-  function enableNearby(){
-    if(!navigator.geolocation){ alert('<%= isEn ? "Geolocation not supported" : "您的浏览器不支持定位功能" %>'); return; }
+  window.enableNearby = function(){
+    if(!navigator.geolocation){
+      alert('<%= isEn ? "Geolocation not supported" : "您的浏览器不支持定位功能" %>'); return;
+    }
     navigator.geolocation.getCurrentPosition(function(pos){
       fetch('/api/user/location', {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -600,9 +612,9 @@ body { background:#fafbfc; }
     }, function(){
       alert('<%= isEn ? "Please allow location access" : "请在浏览器设置中允许获取位置信息" %>');
     }, {enableHighAccuracy:true, timeout:8000});
-  }
+  };
 
-  // Smooth scroll for section nav links
+  // Smooth scroll for section nav
   document.querySelectorAll('.sec-nav a[href^="#"]').forEach(function(a){
     a.addEventListener('click', function(e){
       e.preventDefault();

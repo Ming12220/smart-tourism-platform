@@ -81,7 +81,7 @@ router.get('/tours/nearby', (req, res) => {
     WHERE t.latitude != 0 AND t.longitude != 0
   `).all();
 
-  // 计算距离并过滤 (Haversine formula)
+  // 计算距离并评分 (综合距离+价格: 越近越便宜越靠前)
   function haversineDistance(lat1, lng1, lat2, lng2) {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -93,13 +93,20 @@ router.get('/tours/nearby', (req, res) => {
     return R * c;
   }
 
+  var maxPrice = 0;
+  allTours.forEach(function(t) { if (t.price > maxPrice) maxPrice = t.price; });
+
   const nearby = allTours
     .map(t => ({
       ...t,
       distance: Math.round(haversineDistance(lat, lng, t.latitude, t.longitude) * 10) / 10
     }))
     .filter(t => t.distance <= radius)
-    .sort((a, b) => a.distance - b.distance);
+    .map(t => ({
+      ...t,
+      score: Math.round(((1 - t.distance / radius) * 0.7 + (1 - t.price / maxPrice) * 0.3) * 100) / 100
+    }))
+    .sort((a, b) => b.score - a.score);
 
   res.json({
     success: true,
