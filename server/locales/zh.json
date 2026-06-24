@@ -11,12 +11,14 @@
   "site.title.register": "注册 - 智慧旅游",
   "site.title.booking": "预订 - 智慧旅游",
   "site.title.myBookings": "我的订单 - 智慧旅游",
+  "site.title.nearby": "周边旅游 - 智慧旅游",
 
   "nav.home": "首页",
   "nav.lyzx": "旅游咨询",
   "nav.lywd": "旅游问答",
   "nav.zmzg": "最美中国",
   "nav.gwjd": "国外景点",
+  "nav.nearby": "周边",
 
   "header.register": "注册",
   "header.login": "登录",
@@ -178,5 +180,25 @@
   "admin.bookings": "订单管理",
   "admin.backToSite": "返回前台",
   "admin.panel": "管理面板",
-  "admin.quickActions": "快捷操作"
+  "admin.quickActions": "快捷操作",
+
+  "nearby.title": "周边旅游",
+  "nearby.desc": "发现身边的好去处，探索离你最近的旅游线路",
+  "nearby.locateBtn": "📍 开启定位",
+  "nearby.locateHint": "点击按钮开启位置服务，发现附近线路",
+  "nearby.totalTours": "条线路",
+  "nearby.totalCities": "个城市",
+  "nearby.coverage": "覆盖范围",
+  "nearby.noGeolocation": "您的浏览器不支持定位功能",
+  "nearby.located": "已定位",
+  "nearby.currentLocation": "当前位置",
+  "nearby.toursNearby": "附近的线路",
+  "nearby.distance": "距离",
+  "nearby.from": "起",
+
+  "cat_domestic-long": "国内长线",
+  "cat_abroad-long": "出境长线",
+  "cat_self-tour": "自助旅游",
+  "cat_domestic-short": "国内短线",
+  "cat_cruise": "游轮观光"
 }

@@ -1,6 +1,8 @@
 node_modules/
-server/database/*.db
-server/database/*.db-wal
-server/database/*.db-shm
-server/database/sessions.db*
-*.log
+.env
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+Thumbs.db
+deploy.tar.gz

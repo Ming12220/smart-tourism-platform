@@ -91,6 +91,17 @@
         <p style="color:#666;font-size:15px;"><%= tour.days || '待定' %></p>
       </div>
 
+      <!-- Detailed Introduction -->
+      <% var detailKey = isEn ? 'details_en' : 'details'; %>
+      <% if (tour[detailKey] && tour[detailKey].trim()) { %>
+      <div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:30px;margin-bottom:20px;">
+        <h3 style="color:#333;margin:0 0 20px;font-size:20px;">📖 <%= isEn ? 'Detailed Introduction' : '详细介绍' %></h3>
+        <div class="tour-details-content" style="line-height:1.8;color:#444;font-size:15px;white-space:pre-wrap;word-wrap:break-word;">
+          <%- tour[detailKey] %>
+        </div>
+      </div>
+      <% } %>
+
       <!-- Reviews -->
       <div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:25px;">
         <h3 style="color:#333;margin:0 0 15px;">💬 <%= __('tour.reviews') %></h3>

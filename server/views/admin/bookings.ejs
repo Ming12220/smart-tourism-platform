@@ -41,6 +41,28 @@
   <div class="admin-main">
     <h2 style="color:#2c3e50;margin:0 0 20px;">📋 订单管理</h2>
 
+    <!-- Stats Bar -->
+    <% if (typeof stats !== 'undefined') { %>
+    <div style="display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap;">
+      <div style="background:#fff;border-radius:8px;padding:15px 20px;flex:1;min-width:120px;box-shadow:0 2px 8px rgba(0,0,0,0.05);text-align:center;">
+        <div style="font-size:24px;font-weight:bold;color:#2c3e50;"><%= stats.total %></div>
+        <div style="font-size:12px;color:#888;">📋 总订单</div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:15px 20px;flex:1;min-width:120px;box-shadow:0 2px 8px rgba(0,0,0,0.05);text-align:center;">
+        <div style="font-size:24px;font-weight:bold;color:#ff6600;"><%= stats.pending_count || 0 %></div>
+        <div style="font-size:12px;color:#888;">⏳ 待确认</div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:15px 20px;flex:1;min-width:120px;box-shadow:0 2px 8px rgba(0,0,0,0.05);text-align:center;">
+        <div style="font-size:24px;font-weight:bold;color:#59b200;"><%= stats.confirmed_count || 0 %></div>
+        <div style="font-size:12px;color:#888;">✅ 已确认</div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:15px 20px;flex:1;min-width:120px;box-shadow:0 2px 8px rgba(0,0,0,0.05);text-align:center;">
+        <div style="font-size:24px;font-weight:bold;color:#3498db;">¥<%= (stats.total_revenue || 0).toFixed(0) %></div>
+        <div style="font-size:12px;color:#888;">💰 总收入</div>
+      </div>
+    </div>
+    <% } %>
+
     <div class="filter-tabs">
       <a href="/admin/bookings" class="<%= currentStatus === 'all' ? 'active' : '' %>">全部</a>
       <a href="/admin/bookings?status=pending" class="<%= currentStatus === 'pending' ? 'active' : '' %>">待确认</a>
@@ -63,6 +85,7 @@
               <th>出行日期</th>
               <th>人数</th>
               <th>总价</th>
+              <th>下单时间</th>
               <th>状态</th>
               <th>操作</th>
             </tr>
@@ -77,14 +100,17 @@
                 <td><%= b.travel_date %></td>
                 <td><%= b.adults %>大<%= b.children > 0 ? b.children + '小' : '' %></td>
                 <td><strong>¥<%= b.total_price.toFixed(0) %></strong></td>
+                <td style="font-size:12px;color:#888;"><%= new Date(b.created_at).toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) %></td>
                 <td>
                   <span class="badge badge-<%= b.status %>">
                     <%= b.status === 'pending' ? '待确认' : b.status === 'confirmed' ? '已确认' : b.status === 'completed' ? '已完成' : '已取消' %>
                   </span>
                 </td>
                 <td>
-                  <form class="status-form" method="POST" action="/admin/bookings/status">
+                  <a href="/admin/bookings/detail/<%= b.id %>" style="display:inline-block;padding:4px 10px;background:#3498db;color:#fff;border-radius:4px;text-decoration:none;font-size:12px;">查看</a>
+                  <form class="status-form" method="POST" action="/admin/bookings/status" style="display:inline-block;margin-left:4px;">
                     <input type="hidden" name="id" value="<%= b.id %>">
+                    <input type="hidden" name="redirect" value="/admin/bookings">
                     <select name="status">
                       <option value="pending" <%= b.status === 'pending' ? 'selected' : '' %>>待确认</option>
                       <option value="confirmed" <%= b.status === 'confirmed' ? 'selected' : '' %>>已确认</option>

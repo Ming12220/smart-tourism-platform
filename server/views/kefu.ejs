@@ -80,7 +80,13 @@
             <h3>🤖 <%= __("kefu.chatTitle") %></h3>
             <div class="status"><span class="dot"></span><%= __("kefu.chatOnline") %></div>
           </div>
-          <div style="font-size:12px;opacity:0.8;"><%= __("kefu.chatId") %></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label style="font-size:11px;color:rgba(255,255,255,0.8);cursor:pointer;display:flex;align-items:center;gap:4px;" title="<%= isEn ? 'Enable AI mode for smarter answers' : '开启AI模式，获得更智能的回答' %>">
+              <span>AI</span>
+              <input type="checkbox" id="aiModeToggle" onchange="toggleAIMode()" style="cursor:pointer;">
+            </label>
+            <span style="font-size:12px;opacity:0.8;" id="chatModeLabel"><%= __("kefu.chatId") %></span>
+          </div>
         </div>
 
         <div class="chat-msgs" id="chatMsgs">
@@ -169,6 +175,9 @@
   const chatMsgs = document.getElementById('chatMsgs');
   const chatInput = document.getElementById('chatInput');
 
+  let aiMode = false;
+  const FALLBACK = '🤔 感谢您的咨询！您也可以拨打客服热线 400-888-9999 或点击下方快捷问题，小智会尽快为您解答 😊';
+
   function addMsg(type, text) {
     const div = document.createElement('div');
     div.className = 'msg ' + type;
@@ -179,30 +188,60 @@
     chatMsgs.scrollTop = chatMsgs.scrollHeight;
   }
 
+  function toggleAIMode() {
+    aiMode = document.getElementById('aiModeToggle').checked;
+    document.getElementById('chatModeLabel').textContent = aiMode ? '🤖 AI 小智' : '<%= __("kefu.chatId") %>';
+    addMsg('robot', aiMode
+      ? '🧠 <b>AI智能模式已开启</b><br>我现在可以回答更复杂的问题了！有什么可以帮您的？'
+      : '📋 <b>标准模式</b><br>已切换回知识库自动回复模式');
+  }
+
   function sendMsg() {
     const text = chatInput.value.trim();
     if (!text) return;
     addMsg('user', text);
     chatInput.value = '';
 
-    addMsg('robot', '🤔 ' + document.querySelector('[id^=kefu]') ? '' : '');
-
-    fetch('/api/faq', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.answer) {
-        addMsg('robot', data.answer);
-      } else {
-        addMsg('robot', '🤔 感谢您的咨询！您也可以拨打客服热线 400-888-9999 或点击下方快捷问题，小智会尽快为您解答 😊');
-      }
-    })
-    .catch(() => {
-      addMsg('robot', '🤔 感谢您的咨询！您也可以拨打客服热线 400-888-9999 或点击下方快捷问题，小智会尽快为您解答 😊');
-    });
+    if (aiMode) {
+      // AI mode
+      addMsg('robot', '🤔 小智正在思考...');
+      fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      })
+      .then(r => r.json())
+      .then(data => {
+        chatMsgs.removeChild(chatMsgs.lastChild);
+        if (data.answer) {
+          addMsg('robot', data.answer);
+        } else {
+          addMsg('robot', FALLBACK);
+        }
+      })
+      .catch(() => {
+        chatMsgs.removeChild(chatMsgs.lastChild);
+        addMsg('robot', FALLBACK);
+      });
+    } else {
+      // FAQ mode
+      fetch('/api/faq', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.answer) {
+          addMsg('robot', data.answer);
+        } else {
+          addMsg('robot', FALLBACK);
+        }
+      })
+      .catch(() => {
+        addMsg('robot', FALLBACK);
+      });
+    }
   }
 
   function quickAsk(text) {

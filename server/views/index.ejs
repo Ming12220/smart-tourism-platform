@@ -2,183 +2,259 @@
 <%- include('partials/header', { path, title }) %>
 
 <style>
-  /* === Hero === */
-  .hero-section {
-    position: relative; width: 100%; height: 85vh; min-height: 500px; max-height: 700px; overflow: hidden;
-  }
-  .hero-section .swiper-slide img {
-    width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);
-  }
-  .hero-overlay {
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 100%);
-    z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
-  }
-  .hero-overlay h1 {
-    color: #fff; font-size: 48px; font-weight: 700; text-shadow: 0 2px 20px rgba(0,0,0,0.3);
-    margin-bottom: 10px; text-align: center;
-  }
-  .hero-overlay p {
-    color: rgba(255,255,255,0.9); font-size: 18px; margin-bottom: 30px; text-align: center;
-  }
-  .hero-search {
-    display: flex; max-width: 600px; width: 90%;
-    background: rgba(255,255,255,0.95); border-radius: 50px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  }
-  .hero-search input {
-    flex: 1; border: none; padding: 16px 25px; font-size: 16px; outline: none; background: transparent;
-  }
-  .hero-search button {
-    padding: 16px 35px; background: linear-gradient(135deg, #ff6600, #ff4500);
-    color: #fff; border: none; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s;
-  }
-  .hero-search button:hover { opacity: 0.9; }
+/* === Global === */
+body { background:#fafbfc; }
+:root {
+  --green: #59b200; --orange: #ff6600; --blue: #1a73e8; --dark: #1a2332;
+  --radius: 14px; --radius-sm: 10px; --shadow: 0 2px 16px rgba(0,0,0,0.06);
+  --shadow-hover: 0 12px 40px rgba(0,0,0,0.10);
+}
 
-  /* === Section Titles === */
-  .section-wrap { max-width: 1400px; margin: 0 auto; padding: 0 15px; }
-  .section-title {
-    text-align: center; padding: 50px 15px 10px; position: relative;
-  }
-  .section-title h2 {
-    font-size: 32px; color: #2c3e50; margin: 0; font-weight: 700;
-  }
-  .section-title p { color: #95a5a6; font-size: 15px; margin: 8px 0 0; }
-  .section-title::after {
-    content: ''; display: block; width: 60px; height: 3px;
-    background: linear-gradient(90deg, #59b200, #ff6600); margin: 15px auto 0; border-radius: 2px;
-  }
+/* === Hero === */
+.hero-section {
+  position:relative; width:100%; height:78vh; min-height:480px; max-height:680px; overflow:hidden;
+  margin-bottom:0;
+}
+.hero-section .swiper-slide img {
+  width:100%; height:100%; object-fit:cover; filter:brightness(0.6) saturate(1.1);
+  transition: transform 8s ease;
+}
+.swiper-slide-active img { transform:scale(1.05); }
+.hero-overlay {
+  position:absolute; inset:0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.3) 100%);
+  z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+}
+.hero-overlay h1 {
+  color:#fff; font-size:clamp(28px,5vw,52px); font-weight:800; text-shadow:0 4px 30px rgba(0,0,0,0.4);
+  margin-bottom:8px; text-align:center; letter-spacing:-0.5px;
+}
+.hero-overlay p {
+  color:rgba(255,255,255,0.85); font-size:clamp(14px,1.6vw,18px); margin-bottom:28px; text-align:center;
+}
+.hero-search {
+  display:flex; max-width:580px; width:90%;
+  background:rgba(255,255,255,0.96); border-radius:50px; overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,0.18); transition:0.3s;
+}
+.hero-search:focus-within { box-shadow:0 8px 50px rgba(0,0,0,0.28); transform:scale(1.01); }
+.hero-search input {
+  flex:1; border:none; padding:15px 24px; font-size:15px; outline:none; background:transparent;
+}
+.hero-search button {
+  padding:15px 32px; background:linear-gradient(135deg,#ff6600,#ff4500);
+  color:#fff; border:none; font-size:15px; font-weight:700; cursor:pointer; transition:0.3s;
+}
+.hero-search button:hover { opacity:0.9; }
 
-  /* === Stats === */
-  .stats-bar {
-    display: flex; justify-content: center; gap: 60px; padding: 35px 15px; background: #f8f9fa;
-    flex-wrap: wrap; border-bottom: 1px solid #eee;
-  }
-  .stats-bar .stat-item { text-align: center; }
-  .stats-bar .stat-item .num { font-size: 32px; font-weight: 700; color: #59b200; }
-  .stats-bar .stat-item .label { font-size: 13px; color: #7f8c8d; margin-top: 4px; }
+/* Quick interest chips in hero */
+.hero-chips {
+  display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:20px; max-width:600px;
+}
+.hero-chip {
+  padding:6px 16px; border-radius:20px; font-size:13px; cursor:pointer;
+  background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.9);
+  border:1px solid rgba(255,255,255,0.2); transition:all 0.25s; user-select:none;
+}
+.hero-chip:hover { background:rgba(255,255,255,0.25); border-color:rgba(255,255,255,0.4); }
+.hero-chip.active { background:#fff; color:var(--orange); border-color:#fff; font-weight:600; }
 
-  /* === Tour Grid & Cards === */
-  .tour-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px;
-    max-width: 1400px; margin: 0 auto; padding: 20px 15px;
-  }
-  .tour-card {
-    background: #fff; border-radius: 14px; overflow: hidden;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.05); transition: all 0.35s ease;
-    border: 1px solid #f0f0f0; height: 100%;
-  }
-  .tour-card:hover {
-    transform: translateY(-6px); box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-  }
-  .tour-card .card-img {
-    position: relative; height: 220px; overflow: hidden;
-  }
-  .tour-card .card-img img {
-    width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s;
-  }
-  .tour-card:hover .card-img img { transform: scale(1.08); }
-  .tour-card .card-img .tag {
-    position: absolute; top: 12px; left: 0;
-    background: #59b200; color: #fff; padding: 4px 14px; font-size: 12px; font-weight: 600;
-    border-radius: 0 4px 4px 0;
-  }
-  .tour-card .card-img .tag-promo {
-    position: absolute; top: 12px; right: 12px;
-    background: #ff6600; color: #fff; padding: 3px 10px; font-size: 11px; font-weight: 600;
-    border-radius: 4px; box-shadow: 0 2px 8px rgba(255,102,0,0.3);
-  }
-  .tour-card .card-body { padding: 18px 20px; }
-  .tour-card .card-body h3 {
-    font-size: 16px; color: #2c3e50; margin: 0 0 8px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600;
-  }
-  .tour-card .card-body .desc {
-    color: #7f8c8d; font-size: 13px; line-height: 1.5; margin: 0 0 14px;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  }
-  .tour-card .card-body .meta {
-    display: flex; justify-content: space-between; align-items: center;
-    padding-top: 14px; border-top: 1px solid #f0f0f0;
-  }
-  .tour-card .card-body .meta .price { color: #ff6600; font-size: 14px; font-weight: 600; }
-  .tour-card .card-body .meta .price b { font-size: 22px; }
-  .tour-card .card-body .meta .rating { color: #95a5a6; font-size: 13px; }
+/* === Section Titles (compact) === */
+.sec-title {
+  text-align:center; padding:35px 15px 6px; position:relative;
+}
+.sec-title .label {
+  display:inline-flex; align-items:center; gap:8px; font-size:26px; font-weight:700; color:var(--dark);
+  margin:0;
+}
+.sec-title .label .bar {
+  display:inline-block; width:8px; height:28px; border-radius:4px;
+  background:linear-gradient(180deg,var(--green),var(--orange));
+}
+.sec-title .sub { color:#94a3b8; font-size:14px; margin:6px 0 0; }
 
-  /* === Promotion Section === */
-  .promo-section {
-    background: linear-gradient(135deg, #fff4e6 0%, #ffe8d6 100%);
-    padding: 20px 0 40px; margin-top: 30px;
-  }
-  .promo-section .section-title h2 { color: #e65100; }
-  .promo-section .section-title::after { background: linear-gradient(90deg, #ff6600, #ff4500); }
+/* === Quick Section Nav === */
+.sec-nav {
+  display:flex; justify-content:center; gap:6px; flex-wrap:wrap;
+  padding:8px 15px 4px; max-width:900px; margin:0 auto;
+}
+.sec-nav a {
+  padding:7px 18px; border-radius:20px; font-size:13px; font-weight:500;
+  text-decoration:none; color:#64748b; background:#fff; border:1px solid #e2e8f0;
+  transition:all 0.2s; display:flex; align-items:center; gap:5px;
+}
+.sec-nav a:hover { border-color:var(--green); color:var(--green); background:#f0fdf4; }
 
-  /* === Destinations Grid === */
-  .dest-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
-    gap: 16px; max-width: 1400px; margin: 0 auto; padding: 20px 15px 50px;
-  }
-  .dest-card {
-    background: #fff; border: 1px solid #f0f0f0; border-radius: 14px;
-    padding: 22px 12px; text-align: center; transition: all 0.3s ease;
-    cursor: pointer; text-decoration: none; color: inherit;
-  }
-  .dest-card:hover {
-    transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-    border-color: #59b200;
-  }
-  .dest-card .emoji { font-size: 36px; margin-bottom: 8px; display: block; }
-  .dest-card .name { font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 4px; }
-  .dest-card .tags { font-size: 12px; color: #95a5a6; }
+/* === Stats Bar (icon-driven) === */
+.stats-bar {
+  display:flex; justify-content:center; gap:40px; padding:28px 15px;
+  background:#fff; border-bottom:1px solid #f1f5f9; flex-wrap:wrap;
+}
+.stats-bar .stat-item { text-align:center; min-width:100px; }
+.stats-bar .stat-item .icon { font-size:28px; display:block; margin-bottom:4px; }
+.stats-bar .stat-item .num { font-size:28px; font-weight:800; color:var(--green); line-height:1.2; }
+.stats-bar .stat-item .label { font-size:12px; color:#94a3b8; margin-top:2px; }
 
-  /* === CTA Banner === */
-  .cta-banner {
-    max-width: 1400px; margin: 30px auto; padding: 0 15px;
-  }
-  .cta-banner-inner {
-    background: linear-gradient(135deg, #59b200, #3d8a00);
-    border-radius: 18px; padding: 35px 45px;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 20px;
-    box-shadow: 0 10px 35px rgba(89,178,0,0.25); transition: all 0.3s;
-  }
-  .cta-banner-inner:hover {
-    transform: translateY(-3px); box-shadow: 0 15px 45px rgba(89,178,0,0.35);
-  }
-  .cta-text h3 { font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 6px; }
-  .cta-text p { font-size: 14px; color: rgba(255,255,255,0.9); margin: 0; }
-  .cta-phone { text-align: right; }
-  .cta-phone .num { font-size: 24px; font-weight: 700; color: #fff; }
-  .cta-phone .hours { font-size: 12px; color: rgba(255,255,255,0.8); }
-  .cta-btn {
-    background: #fff; color: #59b200; padding: 12px 30px; border-radius: 30px;
-    font-size: 15px; font-weight: 700; text-decoration: none; transition: 0.3s;
-  }
-  .cta-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+/* === Tour Grid — Card v2 === */
+.tour-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:22px;
+  max-width:1400px; margin:0 auto; padding:14px 15px 6px;
+}
+.tour-card {
+  background:#fff; border-radius:var(--radius); overflow:hidden;
+  box-shadow:var(--shadow); transition:all 0.35s cubic-bezier(.4,0,.2,1);
+  border:1px solid #f0f0f0; display:flex; flex-direction:column; height:100%;
+}
+.tour-card:hover {
+  transform:translateY(-5px); box-shadow:var(--shadow-hover);
+}
+.tour-card .card-img {
+  position:relative; height:200px; overflow:hidden; flex-shrink:0;
+}
+.tour-card .card-img img {
+  width:100%; height:100%; object-fit:cover; transition:transform 0.6s;
+}
+.tour-card:hover .card-img img { transform:scale(1.08); }
+.tour-card .card-img .tag {
+  position:absolute; top:10px; left:0; background:var(--green); color:#fff;
+  padding:3px 12px; font-size:11px; font-weight:600; border-radius:0 4px 4px 0;
+}
+.tour-card .card-img .tag-promo {
+  position:absolute; top:10px; right:10px; background:var(--orange); color:#fff;
+  padding:2px 10px; font-size:11px; font-weight:600; border-radius:4px;
+  box-shadow:0 2px 8px rgba(255,102,0,0.3);
+}
+.tour-card .card-img .badge-overlay {
+  position:absolute; bottom:10px; left:10px; right:10px;
+  display:flex; gap:6px; flex-wrap:wrap;
+}
+.tour-card .card-img .badge-overlay span {
+  background:rgba(0,0,0,0.55); color:#fff; padding:2px 10px; border-radius:12px;
+  font-size:11px; font-weight:500; backdrop-filter:blur(4px);
+}
+.tour-card .card-body { padding:16px 18px; flex:1; display:flex; flex-direction:column; }
+.tour-card .card-body h3 {
+  font-size:15px; color:var(--dark); margin:0 0 6px; font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.tour-card .card-body .desc {
+  color:#94a3b8; font-size:13px; line-height:1.5; margin:0 0 10px; flex:1;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.tour-card .card-body .meta {
+  display:flex; justify-content:space-between; align-items:center;
+  padding-top:12px; border-top:1px solid #f1f5f9; margin-top:auto;
+}
+.tour-card .card-body .meta .price { color:var(--orange); font-size:13px; font-weight:600; }
+.tour-card .card-body .meta .price b { font-size:20px; }
+.tour-card .card-body .meta .rating { color:#94a3b8; font-size:12px; }
 
-  /* === Floating Buttons === */
-  .float-btn {
-    position: fixed; width: 48px; height: 48px; right: 25px; z-index: 999;
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    text-decoration: none; border: none; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.25); transition: all 0.3s; font-size: 20px;
-    color: #fff;
-  }
-  .float-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 25px rgba(0,0,0,0.3); }
-  .float-top { bottom: 30px; background: #59b200; display: none; }
-  .float-kefu { bottom: 90px; background: linear-gradient(135deg, #ff6600, #ff4500); }
+/* === Featured card (first 3 in hot section) === */
+.tour-card.featured { grid-column:span 1; }
+.tour-card.featured .card-img { height:240px; }
+@media (min-width:1100px) {
+  .tour-card.featured:first-child { grid-column:span 2; }
+  .tour-card.featured:first-child .card-img { height:280px; }
+}
 
-  /* === Responsive === */
-  @media (max-width: 768px) {
-    .hero-overlay h1 { font-size: 28px; }
-    .hero-overlay p { font-size: 14px; }
-    .hero-section { height: 60vh; min-height: 400px; }
-    .tour-grid { grid-template-columns: 1fr; gap: 18px; }
-    .dest-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-    .stats-bar { gap: 25px; }
-    .section-title h2 { font-size: 24px; }
-    .cta-banner-inner { flex-direction: column; text-align: center; padding: 25px 20px; }
-    .cta-phone { text-align: center; }
-  }
+/* === Promo ribbon === */
+.promo-wrap {
+  background:linear-gradient(135deg,#fff8f0 0%,#fff0e0 100%);
+  padding:6px 0 28px; margin-top:10px;
+}
+
+/* === Destination chips (replaces old grid) === */
+.dest-chips {
+  display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+  max-width:1300px; margin:12px auto 10px; padding:0 15px;
+}
+.dest-chip {
+  display:flex; align-items:center; gap:6px; padding:8px 16px;
+  background:#fff; border:1px solid #e2e8f0; border-radius:30px;
+  text-decoration:none; transition:all 0.2s; font-size:13px; color:var(--dark);
+  box-shadow:0 1px 4px rgba(0,0,0,0.03);
+}
+.dest-chip:hover {
+  border-color:var(--green); background:#f0fdf4; transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(89,178,0,0.12);
+}
+.dest-chip .emoji { font-size:18px; }
+.dest-chip .name { font-weight:500; }
+.dest-chip .sub { color:#94a3b8; font-size:11px; }
+
+/* === CTA Banner === */
+.cta-banner {
+  max-width:1350px; margin:24px auto; padding:0 15px;
+}
+.cta-inner {
+  background:linear-gradient(135deg,#1a2332 0%,#2d3a4a 100%);
+  border-radius:20px; padding:32px 40px; display:flex;
+  justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;
+  box-shadow:0 10px 35px rgba(26,35,50,0.2); position:relative; overflow:hidden;
+}
+.cta-inner::before {
+  content:''; position:absolute; top:-50%; right:-30%; width:300px; height:300px;
+  background:radial-gradient(circle,rgba(89,178,0,0.1),transparent);
+  border-radius:50%;
+}
+.cta-text h3 { font-size:18px; font-weight:700; color:#fff; margin:0 0 4px; }
+.cta-text p { font-size:13px; color:rgba(255,255,255,0.7); margin:0; }
+.cta-phone { text-align:right; }
+.cta-phone .num { font-size:20px; font-weight:700; color:var(--orange); }
+.cta-phone .hours { font-size:11px; color:rgba(255,255,255,0.5); }
+.cta-btn {
+  background:linear-gradient(135deg,var(--orange),#ff4500); color:#fff; padding:10px 26px;
+  border-radius:30px; font-size:14px; font-weight:700; text-decoration:none; transition:0.3s;
+  box-shadow:0 4px 15px rgba(255,102,0,0.3);
+}
+.cta-btn:hover { transform:scale(1.04); }
+
+/* === Floating === */
+.float-btn {
+  position:fixed; width:44px; height:44px; right:20px; z-index:999;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  text-decoration:none; border:none; cursor:pointer; color:#fff; font-size:18px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.2); transition:all 0.3s;
+}
+.float-btn:hover { transform:translateY(-3px); }
+.float-top { bottom:28px; background:var(--dark); display:none; }
+.float-kefu { bottom:82px; background:linear-gradient(135deg,var(--orange),#ff4500); }
+
+/* === Nearby === */
+.nearby-bar {
+  display:flex; justify-content:center; gap:12px; flex-wrap:wrap;
+  padding:18px 15px; max-width:1400px; margin:0 auto;
+}
+.nearby-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:10px 24px; background:var(--blue); color:#fff;
+  border:none; border-radius:30px; font-size:14px; font-weight:600; cursor:pointer;
+  transition:0.3s; box-shadow:0 4px 15px rgba(26,115,232,0.25);
+}
+.nearby-btn:hover { transform:translateY(-2px); opacity:0.92; }
+.nearby-link { color:var(--blue); font-size:13px; text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+
+/* === Responsive === */
+@media (max-width:768px) {
+  .hero-section { height:60vh; min-height:420px; }
+  .hero-overlay h1 { font-size:26px; }
+  .hero-search input { padding:12px 16px; font-size:14px; }
+  .hero-search button { padding:12px 20px; font-size:14px; }
+  .hero-chips { gap:6px; }
+  .hero-chip { padding:4px 12px; font-size:12px; }
+  .tour-grid { grid-template-columns:1fr; gap:16px; }
+  .tour-card.featured:first-child .card-img { height:220px; }
+  .sec-title .label { font-size:20px; }
+  .stats-bar { gap:16px; padding:20px 10px; }
+  .stats-bar .stat-item { min-width:70px; }
+  .stats-bar .stat-item .num { font-size:22px; }
+  .cta-inner { flex-direction:column; text-align:center; padding:24px 20px; }
+  .cta-phone { text-align:center; }
+  .dest-chips { gap:8px; }
+  .dest-chip { font-size:12px; padding:6px 12px; }
+  .sec-nav { gap:4px; }
+  .sec-nav a { font-size:12px; padding:5px 12px; }
+}
 </style>
 
 <!-- ========== HERO ========== -->
@@ -198,66 +274,131 @@
       <input type="text" name="q" id="searchInput" placeholder="🔍 <%= __('home.hero.search') %>" autocomplete="off">
       <button type="submit"><%= __('home.hero.searchBtn') %></button>
     </form>
+    <!-- Quick interest tags in hero -->
+    <div class="hero-chips">
+      <% var chipList = [
+        {key:'自然风光', en:'Nature', cn:'🏔️ 自然风光'},
+        {key:'海岛度假', en:'Beach', cn:'🏝️ 海岛度假'},
+        {key:'历史文化', en:'History', cn:'🏛️ 文化'},
+        {key:'美食之旅', en:'Food', cn:'🍜 美食'},
+        {key:'亲子游', en:'Family', cn:'👨‍👩‍👧 亲子'},
+        {key:'蜜月旅行', en:'Honeymoon', cn:'💑 蜜月'},
+      ]; %>
+      <% chipList.forEach(function(c) { %>
+        <span class="hero-chip <%= (typeof userInterests !== 'undefined' && userInterests.indexOf(c.key) >= 0) ? 'active' : '' %>"
+              data-key="<%= c.key %>" onclick="toggleHeroChip(this)">
+          <%= isEn ? c.en : c.cn %>
+        </span>
+      <% }) %>
+    </div>
   </div>
 </div>
 
 <!-- ========== STATS ========== -->
 <div class="stats-bar">
-  <div class="stat-item"><div class="num">19</div><div class="label"><%= isEn ? 'Selected Tours' : '精选线路' %></div></div>
-  <div class="stat-item"><div class="num">10+</div><div class="label"><%= isEn ? 'Destinations' : '热门目的地' %></div></div>
-  <div class="stat-item"><div class="num">96%</div><div class="label"><%= isEn ? 'Satisfaction' : '平均满意度' %></div></div>
-  <div class="stat-item"><div class="num">24h</div><div class="label"><%= isEn ? 'Online Service' : '客服在线' %></div></div>
+  <div class="stat-item"><span class="icon">🏝️</span><div class="num">40</div><div class="label"><%= isEn ? 'Tours' : '精选线路' %></div></div>
+  <div class="stat-item"><span class="icon">📍</span><div class="num">32</div><div class="label"><%= isEn ? 'Destinations' : '热门目的地' %></div></div>
+  <div class="stat-item"><span class="icon">⭐</span><div class="num">96%</div><div class="label"><%= isEn ? 'Satisfaction' : '满意度' %></div></div>
+  <div class="stat-item"><span class="icon">💬</span><div class="num">24h</div><div class="label"><%= isEn ? 'Online' : '客服在线' %></div></div>
+  <div class="stat-item"><span class="icon">💰</span><div class="num"><%= (typeof bookingCount !== 'undefined' ? (bookingCount * 2500).toFixed(0) : '9999+') %></div><div class="label"><%= isEn ? 'Served' : '服务人次' %></div></div>
 </div>
 
-<!-- ========== PROMOTIONS ========== -->
-<div class="promo-section">
-  <div class="section-title">
-    <h2>🔥 <%= __('home.promotions') %></h2>
-    <p><%= __('home.promotionsDesc') %></p>
-  </div>
-  <div class="tour-grid" style="padding-top:10px;">
-    <% hotTours.filter(t => t.is_promotion).slice(0, 3).forEach(function(tour) { %>
-      <a href="/tour/<%= tour.id %><%= isEn ? '?lang=en' : '' %>" style="text-decoration:none;color:inherit;">
-        <div class="tour-card">
-          <div class="card-img">
-            <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>">
-            <span class="tag"><%= tt(tour, 'type_label') %></span>
-            <span class="tag-promo"><%= isEn ? 'SALE' : '特价' %></span>
-          </div>
-          <div class="card-body">
-            <h3><%= tt(tour, 'title') %></h3>
-            <p class="desc"><%= tt(tour, 'description') %></p>
-            <div class="meta">
-              <span class="price">¥&nbsp;<b><%= tour.price %></b><%= isEn ? " from" : "起" %>
-                <% if (tour.original_price > tour.price) { %>
-                  <span style="font-size:12px;text-decoration:line-through;color:#bbb;font-weight:normal;">¥<%= tour.original_price %></span>
-                <% } %>
-              </span>
-              <span class="rating">⭐ <%= tour.satisfaction %></span>
-            </div>
-          </div>
-        </div>
-      </a>
-    <% }) %>
-  </div>
+<!-- ========== QUICK NAV ========== -->
+<div class="sec-nav">
+  <a href="#sec-hot">🔥 <%= isEn ? 'Hot' : '热门线路' %></a>
+  <a href="#sec-promo">💰 <%= isEn ? 'Deals' : '限时特惠' %></a>
+  <% if (recommendTours && recommendTours.length > 0) { %><a href="#sec-recommend">🎯 <%= isEn ? 'For You' : '为你推荐' %></a><% } %>
+  <a href="#sec-nearby">📍 <%= isEn ? 'Nearby' : '周边游' %></a>
+  <a href="#sec-dest">🌍 <%= isEn ? 'Destinations' : '目的地' %></a>
+  <a href="/nearby" style="border-color:var(--blue);color:var(--blue);">📍 <%= isEn ? 'All Nearby' : '完整周边' %></a>
 </div>
 
 <!-- ========== HOT TOURS ========== -->
-<div class="section-title">
-  <h2>🏝️ <%= __('home.hotTours') %></h2>
-  <p><%= __('home.hotToursDesc') %></p>
+<div class="sec-title" id="sec-hot">
+  <h2 class="label"><span class="bar"></span>🏝️ <%= __('home.hotTours') %></h2>
+  <p class="sub"><%= __('home.hotToursDesc') %></p>
 </div>
 
-<div class="tour-grid" style="padding-bottom:30px;">
-  <% hotTours.forEach(function(tour) { %>
+<div class="tour-grid">
+  <% hotTours.forEach(function(tour, idx) { %>
     <a href="/tour/<%= tour.id %><%= isEn ? '?lang=en' : '' %>" style="text-decoration:none;color:inherit;">
-      <div class="tour-card">
+      <div class="tour-card <%= idx < 3 ? 'featured' : '' %>">
         <div class="card-img">
           <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>">
           <span class="tag"><%= tt(tour, 'type_label') %></span>
-          <% if (tour.is_promotion) { %>
-            <span class="tag-promo"><%= isEn ? 'SALE' : '特价' %></span>
-          <% } %>
+          <% if (tour.is_promotion) { %><span class="tag-promo"><%= isEn ? 'SALE' : '特价' %></span><% } %>
+          <div class="badge-overlay">
+            <% if (tour.days) { %><span>🗓️ <%= tour.days %></span><% } %>
+            <% if (tour.satisfaction) { %><span>⭐ <%= tour.satisfaction %></span><% } %>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3><%= tt(tour, 'title') %></h3>
+          <p class="desc"><%= tt(tour, 'description') %></p>
+          <div class="meta">
+            <span class="price">¥&nbsp;<b><%= tour.price %></b><%= isEn ? " from" : "起" %>
+              <% if (tour.original_price > tour.price) { %>
+                <span style="font-size:11px;text-decoration:line-through;color:#bbb;font-weight:normal;">¥<%= tour.original_price %></span>
+              <% } %>
+            </span>
+            <span class="rating">🔥 <%= (idx + 1) %></span>
+          </div>
+        </div>
+      </div>
+    </a>
+  <% }) %>
+</div>
+
+<!-- ========== PROMOTIONS ========== -->
+<div class="promo-wrap" id="sec-promo">
+<div class="sec-title">
+  <h2 class="label"><span class="bar"></span>🔥 <%= __('home.promotions') %></h2>
+  <p class="sub"><%= __('home.promotionsDesc') %></p>
+</div>
+<div class="tour-grid">
+  <% hotTours.filter(t => t.is_promotion).slice(0, 4).forEach(function(tour) { %>
+    <a href="/tour/<%= tour.id %><%= isEn ? '?lang=en' : '' %>" style="text-decoration:none;color:inherit;">
+      <div class="tour-card" style="border-top:3px solid var(--orange);">
+        <div class="card-img">
+          <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>">
+          <span class="tag"><%= tt(tour, 'type_label') %></span>
+          <span class="tag-promo"><%= isEn ? '🔥 SALE' : '🔥 特价' %></span>
+          <div class="badge-overlay">
+            <span>💰 <%- isEn ? 'Save' : '省' %> ¥<%= (tour.original_price - tour.price).toFixed(0) %></span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3><%= tt(tour, 'title') %></h3>
+          <p class="desc"><%= tt(tour, 'description') %></p>
+          <div class="meta">
+            <span class="price">¥&nbsp;<b><%= tour.price %></b><%= isEn ? " from" : "起" %>
+              <span style="font-size:11px;text-decoration:line-through;color:#bbb;">¥<%= tour.original_price %></span>
+            </span>
+            <span class="rating">⏰ <%= tour.promotion_end ? tour.promotion_end.slice(0,7) : (isEn ? 'Limited' : '限时') %></span>
+          </div>
+        </div>
+      </div>
+    </a>
+  <% }) %>
+</div>
+</div>
+
+<!-- ========== PERSONALIZED RECOMMENDATIONS ========== -->
+<% if (typeof recommendTours !== 'undefined' && recommendTours.length > 0) { %>
+<div class="sec-title" id="sec-recommend">
+  <h2 class="label"><span class="bar"></span>🎯 <%= isEn ? 'Recommended for You' : '为你推荐' %></h2>
+  <p class="sub"><%= isEn ? 'Based on your browsing and interests' : '基于你的浏览和兴趣偏好' %></p>
+</div>
+<div class="tour-grid">
+  <% recommendTours.slice(0, 6).forEach(function(tour) { %>
+    <a href="/tour/<%= tour.id %><%= isEn ? '?lang=en' : '' %>" style="text-decoration:none;color:inherit;">
+      <div class="tour-card" style="border-left:3px solid var(--orange);">
+        <div class="card-img">
+          <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>">
+          <span class="tag"><%= tt(tour, 'type_label') %></span>
+          <div class="badge-overlay">
+            <span><%= typeof recommendReasons !== 'undefined' && recommendReasons[tour.id] ? recommendReasons[tour.id] : '🎯 猜你喜欢' %></span>
+          </div>
         </div>
         <div class="card-body">
           <h3><%= tt(tour, 'title') %></h3>
@@ -271,37 +412,59 @@
     </a>
   <% }) %>
 </div>
+<% } %>
 
-<!-- ========== CATEGORIES ========== -->
-<div class="section-title" style="padding-top:20px;">
-  <h2>📂 <%- isEn ? 'Categories' : '线路分类' %></h2>
-  <p><%- isEn ? 'Browse by category' : '按分类浏览线路' %></p>
+<!-- ========== NEARBY TOURS ========== -->
+<div class="sec-title" id="sec-nearby">
+  <h2 class="label"><span class="bar"></span>📍 <%= isEn ? 'Nearby Tours' : '附近旅游' %></h2>
+  <p class="sub"><%= isEn ? 'Discover tours near your location' : '发现身边最近的旅游好去处' %></p>
 </div>
-<div class="dest-grid" style="padding-bottom:30px;">
-  <% categories.forEach(function(cat) { %>
-    <a href="/<%= isEn ? 'gwjd' : 'zmzg' %>" class="dest-card">
-      <span class="emoji">
-        <% if (cat.slug === 'domestic-long' || cat.slug === 'domestic-short') { %>🏔️<% } %>
-        <% if (cat.slug === 'abroad-long') { %>🌍<% } %>
-        <% if (cat.slug === 'self-tour') { %>🚶<% } %>
-        <% if (cat.slug === 'cruise') { %>🚢<% } %>
-      </span>
-      <div class="name"><%= tc(cat) %></div>
-      <div class="tags"><%= isEn ? 'View tours' : '查看线路' %> →</div>
+
+<% if (typeof nearbyTours !== 'undefined' && nearbyTours.length > 0) { %>
+<div class="tour-grid" style="padding-bottom:4px;">
+  <% nearbyTours.forEach(function(tour) { %>
+    <a href="/tour/<%= tour.id %><%= isEn ? '?lang=en' : '' %>" style="text-decoration:none;color:inherit;">
+      <div class="tour-card" style="border-left:3px solid var(--blue);">
+        <div class="card-img">
+          <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>">
+          <span class="tag"><%= tt(tour, 'type_label') %></span>
+          <div class="badge-overlay">
+            <span>📍 <%= tour.city %></span>
+            <span>📏 <%= tour.distance %>km</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3><%= tt(tour, 'title') %></h3>
+          <p class="desc"><%= tt(tour, 'description') %></p>
+          <div class="meta">
+            <span class="price">¥&nbsp;<b><%= tour.price %></b><%= isEn ? " from" : "起" %></span>
+            <span class="rating">⭐ <%= tour.satisfaction %></span>
+          </div>
+        </div>
+      </div>
     </a>
   <% }) %>
 </div>
+<div class="nearby-bar" style="padding-top:4px;">
+  <a href="/nearby" class="nearby-link">📍 <%= isEn ? 'View All Nearby Tours' : '查看全部附近线路' %> →</a>
+</div>
+<% } else { %>
+<div class="nearby-bar">
+  <button class="nearby-btn" onclick="enableNearby()">📍 <%= isEn ? 'Enable Location' : '开启定位' %></button>
+  <a href="/nearby" class="nearby-link"><%= isEn ? 'Browse all destinations' : '浏览全部目的地' %> →</a>
+</div>
+<% } %>
 
-<!-- ========== CTA ========== -->
+<!-- ========== CTA BANNER ========== -->
 <div class="cta-banner">
   <a href="/kefu" style="text-decoration:none;display:block;">
-    <div class="cta-banner-inner">
+    <div class="cta-inner">
       <div class="cta-text">
         <h3>💬 <%= isEn ? 'Need Help? We\'re Online!' : '需要帮助？我们在线！' %></h3>
-        <p><%= isEn ? 'Professional travel consultants, one-on-one service' : '专业旅游顾问 · 一对一服务 · 全天候在线' %></p>
+        <p><%= isEn ? 'One-on-one pro travel consultant, 24/7' : '专业旅游顾问 · 一对一服务 · 全天候在线' %></p>
       </div>
       <div class="cta-phone">
-        <div class="num">400-888-9999</div>
+        <div class="num">📞 400-888-9999</div>
         <div class="hours"><%= __('kefu.contactHours') %></div>
       </div>
       <span class="cta-btn"><%= isEn ? 'Chat Now' : '咨询客服' %> →</span>
@@ -309,38 +472,72 @@
   </a>
 </div>
 
-<!-- ========== DESTINATIONS ========== -->
-<div class="section-title" style="padding-top:10px;">
-  <h2>🌍 <%= isEn ? 'Popular Destinations' : '热门目的地' %></h2>
-  <p><%= isEn ? 'Explore popular destinations around the world' : '精选全球热门旅游目的地' %></p>
+<!-- ========== DESTINATIONS (compact chips) ========== -->
+<div class="sec-title" id="sec-dest">
+  <h2 class="label"><span class="bar"></span>🌍 <%= isEn ? 'Popular Destinations' : '热门目的地' %></h2>
+  <p class="sub"><%= isEn ? 'Explore popular destinations' : '精选全球热门目的地，点击查看详情' %></p>
 </div>
 
-<div class="dest-grid">
-  <% var destinations = [
-    {nameEn:'Huangshan Mountain', nameCn:'黄山 · 天下第一奇山', emoji:'🏔️', tourId:10, descEn:'Welcoming Pine · Sea of Clouds', descCn:'迎客松·云海·日出'},
-    {nameEn:'Jiuzhaigou Valley', nameCn:'九寨沟 · 人间仙境', emoji:'🌊', tourId:11, descEn:'Five Flower Lake · Waterfalls', descCn:'五花海·诺日朗瀑布'},
-    {nameEn:'Sanya Paradise', nameCn:'三亚 · 天涯海角', emoji:'🏝️', tourId:12, descEn:'Wuzhizhou · Yalong Bay', descCn:'蜈支洲岛·亚龙湾'},
-    {nameEn:'Lijiang Ancient Town', nameCn:'丽江 · 玉龙雪山', emoji:'🏯', tourId:13, descEn:'Old Town · Jade Dragon Snow', descCn:'古城·雪山·束河'},
-    {nameEn:'Zhangjiajie', nameCn:'张家界 · 阿凡达', emoji:'🏔️', tourId:14, descEn:'Avatar Mountains · Glass Walk', descCn:'袁家界·天门山'},
-    {nameEn:'Guilin Landscape', nameCn:'桂林 · 山水甲天下', emoji:'🎋', tourId:15, descEn:'Li River · Yangshuo', descCn:'漓江·阳朔·竹筏'},
-    {nameEn:'Xi\'an Ancient Capital', nameCn:'西安 · 千年古都', emoji:'🛕', tourId:16, descEn:'Terracotta · City Wall', descCn:'兵马俑·古城墙'},
-    {nameEn:'Xishuangbanna', nameCn:'西双版纳 · 雨林', emoji:'🌺', tourId:17, descEn:'Rainforest · Elephants', descCn:'野象谷·傣族园'},
-    {nameEn:'Wuzhen Water Town', nameCn:'乌镇 · 梦里水乡', emoji:'🏘️', tourId:18, descEn:'Canals · Gondola', descCn:'西栅·摇橹船'},
-    {nameEn:'Forbidden City', nameCn:'故宫 · 紫禁城', emoji:'🏰', tourId:19, descEn:'Palace · Garden', descCn:'三大殿·御花园'},
-    {nameEn:'Bangkok Thailand', nameCn:'泰国 · 曼谷', emoji:'🇹🇭', tourId:1, descEn:'Grand Palace · Cabaret', descCn:'大皇宫·人妖秀'},
-    {nameEn:'Maldives', nameCn:'马尔代夫 · 双鱼岛', emoji:'🇲🇻', tourId:2, descEn:'Diving · Sunset', descCn:'潜水·海上日落'},
-    {nameEn:'Japan Mt.Fuji', nameCn:'日本 · 富士山', emoji:'🇯🇵', tourId:4, descEn:'Hot Spring · Cherry', descCn:'温泉·樱花'},
-    {nameEn:'Bali Island', nameCn:'巴厘岛 · 蜜月', emoji:'🇮🇩', tourId:6, descEn:'Beach · SPA', descCn:'海滩·SPA'},
-    {nameEn:'Turkey', nameCn:'土耳其 · 热气球', emoji:'🇹🇷', tourId:8, descEn:'Balloon · Pamukkale', descCn:'棉花堡·卡帕'},
-    {nameEn:'Paris France', nameCn:'法国 · 浪漫巴黎', emoji:'🇫🇷', tourId:5, descEn:'Eiffel · Louvre', descCn:'铁塔·卢浮宫'},
+<div class="dest-chips">
+  <% var dests = [
+    {en:'Huangshan', cn:'黄山 🏔️', tourId:10, subEn:'Clouds & Pines', subCn:'迎客松·云海'},
+    {en:'Jiuzhaigou', cn:'九寨沟 🌊', tourId:11, subEn:'Turquoise Lakes', subCn:'五花海·瀑布'},
+    {en:'Sanya', cn:'三亚 🏝️', tourId:12, subEn:'Beach Paradise', subCn:'蜈支洲·亚龙湾'},
+    {en:'Lijiang', cn:'丽江 🏯', tourId:13, subEn:'Ancient Town', subCn:'古城·雪山'},
+    {en:'Zhangjiajie', cn:'张家界 ⛰️', tourId:14, subEn:'Avatar Mountains', subCn:'袁家界·天门山'},
+    {en:'Guilin', cn:'桂林 🎋', tourId:15, subEn:'Li River', subCn:'漓江·阳朔'},
+    {en:'Xi\'an', cn:'西安 🛕', tourId:16, subEn:'Terracotta', subCn:'兵马俑·古城墙'},
+    {en:'Xishuangbanna', cn:'西双版纳 🌺', tourId:17, subEn:'Rainforest', subCn:'野象谷·傣族'},
+    {en:'Wuzhen', cn:'乌镇 🏘️', tourId:18, subEn:'Water Town', subCn:'西栅·水乡'},
+    {en:'Forbidden City', cn:'故宫 🏰', tourId:19, subEn:'Imperial Palace', subCn:'紫禁城·三大殿'},
+    {en:'Chengdu', cn:'成都 🐼', tourId:23, subEn:'Pandas', subCn:'熊猫·都江堰'},
+    {en:'Chongqing', cn:'重庆 🌃', tourId:24, subEn:'Mountain City', subCn:'洪崖洞·火锅'},
+    {en:'Kunming', cn:'昆明 🌸', tourId:21, subEn:'Spring City', subCn:'石林·滇池'},
+    {en:'Dali', cn:'大理 🌙', tourId:32, subEn:'Erhai Lake', subCn:'洱海·苍山'},
+    {en:'Hangzhou', cn:'杭州 🏯', tourId:26, subEn:'West Lake', subCn:'西湖·灵隐'},
+    {en:'Suzhou', cn:'苏州 🏡', tourId:27, subEn:'Gardens', subCn:'园林·周庄'},
+    {en:'Dunhuang', cn:'敦煌 🎨', tourId:30, subEn:'Mogao Caves', subCn:'莫高窟·鸣沙山'},
+    {en:'Lhasa', cn:'拉萨 🙏', tourId:29, subEn:'Tibet', subCn:'布达拉宫·圣湖'},
+    {en:'Xiamen', cn:'厦门 🏝️', tourId:25, subEn:'Gulangyu', subCn:'鼓浪屿·文艺'},
+    {en:'Qingdao', cn:'青岛 🏖️', tourId:28, subEn:'Beer & Beach', subCn:'崂山·啤酒'},
+    {en:'Ningxia', cn:'宁夏 🏜️', tourId:20, subEn:'Desert', subCn:'沙坡头·西夏'},
+    {en:'Harbin', cn:'哈尔滨 ❄️', tourId:31, subEn:'Ice City', subCn:'冰雪大世界'},
+    {en:'Bangkok', cn:'曼谷 🇹🇭', tourId:1, subEn:'Grand Palace', subCn:'大皇宫·美食'},
+    {en:'Seoul', cn:'首尔 🇰🇷', tourId:33, subEn:'K-Culture', subCn:'景福宫·韩流'},
+    {en:'Singapore', cn:'新加坡 🇸🇬', tourId:34, subEn:'Garden City', subCn:'鱼尾狮·环球'},
+    {en:'Maldives', cn:'马尔代夫 🇲🇻', tourId:2, subEn:'Diving', subCn:'潜水·日落'},
+    {en:'Japan', cn:'日本 🗾', tourId:4, subEn:'Mt.Fuji', subCn:'富士山·温泉'},
+    {en:'Bali', cn:'巴厘岛 🌺', tourId:6, subEn:'Paradise', subCn:'海滩·SPA'},
+    {en:'Phuket', cn:'普吉岛 🏝️', tourId:35, subEn:'Islands', subCn:'皇帝岛·潜水'},
+    {en:'Turkey', cn:'土耳其 🎈', tourId:8, subEn:'Balloons', subCn:'热气球·棉花堡'},
+    {en:'Egypt', cn:'埃及 🔺', tourId:36, subEn:'Pyramids', subCn:'金字塔·尼罗河'},
+    {en:'Moscow', cn:'俄罗斯 🏛️', tourId:40, subEn:'Red Square', subCn:'红场·冬宫'},
   ]; %>
-  <% destinations.forEach(function(d) { %>
-    <a href="/tour/<%= d.tourId %><%= isEn ? '?lang=en' : '' %>" class="dest-card">
-      <span class="emoji"><%= d.emoji %></span>
-      <div class="name"><%= isEn ? d.nameEn : d.nameCn %></div>
-      <div class="tags"><%= isEn ? d.descEn : d.descCn %></div>
+  <% dests.forEach(function(d) { %>
+    <a href="/tour/<%= d.tourId %><%= isEn ? '?lang=en' : '' %>" class="dest-chip">
+      <%= isEn ? d.en : d.cn %>
+      <span class="sub"><%= isEn ? d.subEn : d.subCn %></span>
     </a>
   <% }) %>
+</div>
+
+<!-- ========== CATEGORIES (inline) ========== -->
+<div class="sec-title" style="padding-top:10px;">
+  <h2 class="label"><span class="bar"></span>📂 <%- isEn ? 'Categories' : '线路分类' %></h2>
+</div>
+<div class="dest-chips" style="padding-bottom:20px;">
+  <% categories.forEach(function(cat) { %>
+    <a href="/<%= isEn ? 'gwjd' : 'zmzg' %>" class="dest-chip">
+      <span class="emoji">
+        <% if (cat.slug === 'domestic-long' || cat.slug === 'domestic-short') { %>🏔️<% } %>
+        <% if (cat.slug === 'abroad-long') { %>🌍<% } %>
+        <% if (cat.slug === 'self-tour') { %>🚶<% } %>
+        <% if (cat.slug === 'cruise') { %>🚢<% } %>
+      </span>
+      <span class="name"><%= __('cat_' + cat.slug) %></span>
+    </a>
+  <% }) %>
+  <a href="/nearby" class="dest-chip" style="border-color:var(--blue);color:var(--blue);">📍 <%= isEn ? 'Nearby' : '周边游' %></a>
 </div>
 
 <!-- Floating buttons -->
@@ -348,27 +545,70 @@
 <a href="/kefu" class="float-btn float-kefu" title="<%= isEn ? 'Customer Service' : '在线客服' %>">💬</a>
 
 <script>
+  // Swiper
   var swiper = new Swiper('.swiper-container', {
-    pagination: { el: '.swiper-pagination', clickable: true },
-    loop: true, autoplay: { delay: 3500, disableOnInteraction: false },
-    effect: 'fade', fadeEffect: { crossFade: true }
+    pagination:{el:'.swiper-pagination',clickable:true},
+    loop:true, autoplay:{delay:3500,disableOnInteraction:false},
+    effect:'fade', fadeEffect:{crossFade:true}
   });
 
-  window.addEventListener('scroll', function() {
+  // Scroll-to-top button
+  window.addEventListener('scroll', function(){
     var btn = document.getElementById('backTop');
-    if (btn) btn.style.display = window.scrollY > 500 ? 'flex' : 'none';
+    if(btn) btn.style.display = window.scrollY > 500 ? 'flex' : 'none';
   });
 
-  function goSearch() {
+  // Search
+  function goSearch(){
     var q = document.getElementById('searchInput').value.trim();
-    if (!q) { document.getElementById('searchInput').focus(); return false; }
+    if(!q){ document.getElementById('searchInput').focus(); return false; }
     var lang = '<%= lang %>' === 'en' ? '?lang=en' : '';
     window.location.href = '/search?q=' + encodeURIComponent(q) + lang;
     return false;
   }
+  document.getElementById('searchInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); goSearch(); }
+  });
 
-  document.getElementById('searchInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') { e.preventDefault(); goSearch(); }
+  // === Hero chips: toggle interest ===
+  var heroChips = document.querySelectorAll('.hero-chip');
+  var selectedHeroChips = [];
+  <%
+    var savedChips = (typeof userInterests !== 'undefined' ? userInterests : []);
+    savedChips.forEach(function(k) { %>selectedHeroChips.push('<%= k %>');<% });
+  %>
+  function toggleHeroChip(el){
+    var key = el.getAttribute('data-key');
+    var idx = selectedHeroChips.indexOf(key);
+    if(idx >= 0){ selectedHeroChips.splice(idx,1); el.classList.remove('active'); }
+    else { selectedHeroChips.push(key); el.classList.add('active'); }
+    // Auto-save to server
+    fetch('/api/preferences', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({interests:selectedHeroChips})
+    }).catch(function(){});
+  }
+
+  // Nearby location
+  function enableNearby(){
+    if(!navigator.geolocation){ alert('<%= isEn ? "Geolocation not supported" : "您的浏览器不支持定位功能" %>'); return; }
+    navigator.geolocation.getCurrentPosition(function(pos){
+      fetch('/api/user/location', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({latitude:pos.coords.latitude, longitude:pos.coords.longitude})
+      }).then(function(r){ return r.json(); }).then(function(d){ if(d.success) window.location.reload(); });
+    }, function(){
+      alert('<%= isEn ? "Please allow location access" : "请在浏览器设置中允许获取位置信息" %>');
+    }, {enableHighAccuracy:true, timeout:8000});
+  }
+
+  // Smooth scroll for section nav links
+  document.querySelectorAll('.sec-nav a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    });
   });
 </script>
 

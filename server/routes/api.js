@@ -37,6 +37,91 @@ router.get('/tours', (req, res) => {
   res.json({ success: true, data: tours });
 });
 
+// GET /api/tours/nearby — 获取附近旅游线路 (MUST be before /tours/:id)
+router.get('/tours/nearby', (req, res) => {
+  const db = getDb();
+
+  // 优先使用 session 中保存的位置
+  let lat, lng;
+  if (req.session?.userLocation) {
+    lat = req.session.userLocation.latitude;
+    lng = req.session.userLocation.longitude;
+  }
+  // URL 参数可以覆盖
+  if (req.query.lat && req.query.lng) {
+    lat = parseFloat(req.query.lat);
+    lng = parseFloat(req.query.lng);
+  }
+
+  const radius = parseInt(req.query.radius) || 500; // 默认500km范围
+
+  if (!lat || !lng) {
+    // 没有定位信息，返回按城市分组的热门线路
+    const tours = db.prepare(`
+      SELECT t.*, c.name as category_name, c.name_en as category_name_en
+      FROM tours t
+      LEFT JOIN categories c ON t.category_id = c.id
+      WHERE t.latitude != 0 AND t.longitude != 0
+      ORDER BY t.is_hot DESC, t.satisfaction DESC
+      LIMIT 12
+    `).all();
+    return res.json({
+      success: true,
+      data: tours,
+      hasLocation: false,
+      message: '请开启定位以查看附近线路'
+    });
+  }
+
+  // 从数据库取出所有有坐标的线路
+  const allTours = db.prepare(`
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en
+    FROM tours t
+    LEFT JOIN categories c ON t.category_id = c.id
+    WHERE t.latitude != 0 AND t.longitude != 0
+  `).all();
+
+  // 计算距离并过滤 (Haversine formula)
+  function haversineDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  const nearby = allTours
+    .map(t => ({
+      ...t,
+      distance: Math.round(haversineDistance(lat, lng, t.latitude, t.longitude) * 10) / 10
+    }))
+    .filter(t => t.distance <= radius)
+    .sort((a, b) => a.distance - b.distance);
+
+  res.json({
+    success: true,
+    data: nearby.slice(0, 20),
+    hasLocation: true,
+    userLocation: { latitude: lat, longitude: lng },
+    radius: radius
+  });
+});
+
+// GET /api/tours/nearby/cities — 获取所有有定位的城市列表
+router.get('/tours/nearby/cities', (req, res) => {
+  const db = getDb();
+  const cities = db.prepare(`
+    SELECT DISTINCT city, location_name, latitude, longitude
+    FROM tours
+    WHERE city != '' AND latitude != 0
+    ORDER BY city
+  `).all();
+  res.json({ success: true, data: cities });
+});
+
 // GET /api/tours/:id — single tour detail
 router.get('/tours/:id', (req, res) => {
   const db = getDb();
@@ -170,6 +255,30 @@ router.get('/search', (req, res) => {
   res.json({ success: true, data: { tours, questions } });
 });
 
+// GET /api/recommend — 获取个性化推荐（使用推荐引擎）
+router.get('/recommend', (req, res) => {
+  const { getRecommendations } = require('../middlewares/recommend');
+  const tours = getRecommendations(req.session, 8);
+  res.json({ success: true, data: tours });
+});
+
+// POST /api/user/location — 保存用户地理位置
+router.post('/user/location', (req, res) => {
+  const { latitude, longitude, city } = req.body;
+  if (!latitude || !longitude) {
+    return res.json({ success: false, message: '缺少位置信息' });
+  }
+  if (req.session) {
+    req.session.userLocation = {
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+      city: city || '',
+      updatedAt: new Date().toISOString()
+    };
+  }
+  res.json({ success: true, message: '位置已保存' });
+});
+
 // POST /api/faq — chatbot FAQ query
 router.post('/faq', (req, res) => {
   const { message } = req.body;
@@ -211,6 +320,96 @@ router.post('/faq', (req, res) => {
 
   // No match — return null so frontend can use fallback reply
   res.json({ success: true, answer: null });
+});
+
+// POST /api/ai-chat — AI 智能客服
+const aiChatHistory = {}; // 简单会话记忆
+router.post('/ai-chat', async (req, res) => {
+  const { message, sessionId } = req.body;
+  if (!message || !message.trim()) {
+    return res.json({ success: false, answer: '请输入您的问题' });
+  }
+
+  const db = getDb();
+  const aiModule = require('../middlewares/ai');
+  const apiKey = aiModule.getApiKey();
+
+  if (!apiKey) {
+    // No API key configured — fall back to FAQ matching
+    const msg = message.trim().toLowerCase();
+    const allFaqs = db.prepare('SELECT * FROM knowledge_base ORDER BY sort_order').all();
+    let bestMatch = null, bestScore = 0;
+    for (const faq of allFaqs) {
+      const keywords = faq.keywords.split(/[\s,，]+/);
+      let score = 0;
+      for (const kw of keywords) {
+        if (msg.includes(kw.toLowerCase())) score++;
+      }
+      if (score > bestScore) { bestScore = score; bestMatch = faq; }
+    }
+    if (bestMatch && bestScore > 0) {
+      return res.json({ success: true, answer: bestMatch.answer, from: 'faq' });
+    }
+    return res.json({ success: true, answer: '🤔 请先配置 DeepSeek API Key 开启AI模式，或拨打客服热线 <b>400-888-9999</b>。', from: 'nokey' });
+  }
+
+  try {
+    // Build FAQ context
+    const faqContext = aiModule.buildFaqContext(db);
+    const systemPrompt = aiModule.buildSystemPrompt(faqContext);
+
+    // Build message history
+    const sid = sessionId || req.session?.id || 'default';
+    if (!aiChatHistory[sid]) {
+      aiChatHistory[sid] = [{ role: 'system', content: systemPrompt }];
+    }
+
+    // Limit history to last 10 messages (keep system prompt)
+    if (aiChatHistory[sid].length > 10) {
+      aiChatHistory[sid] = [
+        aiChatHistory[sid][0],
+        ...aiChatHistory[sid].slice(-8)
+      ];
+    }
+
+    aiChatHistory[sid].push({ role: 'user', content: message });
+
+    const reply = await aiModule.callDeepSeek(apiKey, aiChatHistory[sid]);
+
+    aiChatHistory[sid].push({ role: 'assistant', content: reply });
+
+    res.json({ success: true, answer: reply });
+  } catch (err) {
+    console.error('AI Chat error:', err.message);
+    // Fallback to FAQ matching
+    const msg = message.trim().toLowerCase();
+    const allFaqs = db.prepare('SELECT * FROM knowledge_base ORDER BY sort_order').all();
+    let bestMatch = null, bestScore = 0;
+    for (const faq of allFaqs) {
+      const keywords = faq.keywords.split(/[\s,，]+/);
+      let score = 0;
+      for (const kw of keywords) {
+        if (msg.includes(kw.toLowerCase())) score++;
+      }
+      if (score > bestScore) { bestScore = score; bestMatch = faq; }
+    }
+    if (bestMatch && bestScore > 0) {
+      return res.json({ success: true, answer: bestMatch.answer, from: 'faq' });
+    }
+    res.json({ success: true, answer: '🤔 抱歉，小智暂时无法回答这个问题。请拨打客服热线 <b>400-888-9999</b> 或留言给我们。', from: 'fallback' });
+  }
+});
+
+// POST /api/preferences — 设置用户偏好
+router.post('/preferences', (req, res) => {
+  const { interests } = req.body;
+  if (!Array.isArray(interests)) {
+    return res.json({ success: false, message: '请选择兴趣标签' });
+  }
+  if (req.session) {
+    req.session.userInterests = interests;
+  }
+  res.json({ success: true, message: '兴趣标签已保存' });
 });
 
 module.exports = router;

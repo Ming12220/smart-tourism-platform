@@ -11,12 +11,14 @@
   "site.title.register": "Register - Smart Tourism",
   "site.title.booking": "Booking - Smart Tourism",
   "site.title.myBookings": "My Orders - Smart Tourism",
+  "site.title.nearby": "Nearby Tours - Smart Tourism",
 
   "nav.home": "Home",
   "nav.lyzx": "Consulting",
   "nav.lywd": "Q&A",
   "nav.zmzg": "Beautiful China",
   "nav.gwjd": "International",
+  "nav.nearby": "Nearby",
 
   "header.register": "Register",
   "header.login": "Login",
@@ -178,5 +180,25 @@
   "admin.bookings": "Order Management",
   "admin.backToSite": "Back to Site",
   "admin.panel": "Admin Panel",
-  "admin.quickActions": "Quick Actions"
+  "admin.quickActions": "Quick Actions",
+
+  "nearby.title": "Nearby Tours",
+  "nearby.desc": "Discover tours near your location",
+  "nearby.locateBtn": "📍 Enable Location",
+  "nearby.locateHint": "Click to enable location services and discover nearby tours",
+  "nearby.totalTours": "tours",
+  "nearby.totalCities": "cities",
+  "nearby.coverage": "Coverage",
+  "nearby.noGeolocation": "Your browser doesn't support geolocation",
+  "nearby.located": "Located",
+  "nearby.currentLocation": "Current location",
+  "nearby.toursNearby": "tours nearby",
+  "nearby.distance": "Distance",
+  "nearby.from": "from",
+
+  "cat_domestic-long": "Domestic Long Tours",
+  "cat_abroad-long": "International Tours",
+  "cat_self-tour": "Self-guided Tours",
+  "cat_domestic-short": "Domestic Short Tours",
+  "cat_cruise": "Cruise Tours"
 }

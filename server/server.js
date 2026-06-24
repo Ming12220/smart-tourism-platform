@@ -20,6 +20,22 @@ initDatabase();
 const { migrateEn } = require('./database/migrate_en_auto');
 migrateEn();
 
+// Run location data migration
+const { migrateLocation } = require('./database/migrate_location');
+migrateLocation();
+
+// Run details migration
+const { migrateDetails } = require('./database/migrate_details');
+migrateDetails();
+
+// Run new tours migration
+const { migrateNewTours } = require('./database/migrate_newtours');
+migrateNewTours();
+
+// Run English translation for new tours
+const { migrateEnNewTours } = require('./database/migrate_en_newtours');
+migrateEnNewTours();
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -85,7 +101,50 @@ app.get('/', (req, res) => {
     WHERE t.is_promotion = 1 ORDER BY t.created_at DESC LIMIT 6
   `).all();
   const categories = db.prepare('SELECT * FROM categories ORDER BY sort_order').all();
-  res.render('index', { hotTours, promotions, categories });
+
+  // Personalized recommendations (using recommendation engine)
+  const { getRecommendations, getRecommendReason } = require('./middlewares/recommend');
+  const recommendTours = getRecommendations(req.session, 6);
+
+  // Generate recommendation reasons
+  const recommendReasons = {};
+  recommendTours.forEach(t => {
+    recommendReasons[t.id] = getRecommendReason(t.id, req.session);
+  });
+
+  // Get nearby tours (via session location if available)
+  let nearbyTours = [];
+  if (req.session?.userLocation) {
+    const { lat, lng } = req.session.userLocation;
+    const allLocated = db.prepare(`
+      SELECT t.*, c.name as category_name, c.name_en as category_name_en 
+      FROM tours t 
+      LEFT JOIN categories c ON t.category_id = c.id 
+      WHERE t.latitude != 0 AND t.longitude != 0
+    `).all();
+    
+    function haversine(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+    
+    nearbyTours = allLocated
+      .map(t => ({ ...t, distance: Math.round(haversine(lat, lng, t.latitude, t.longitude) * 10) / 10 }))
+      .filter(t => t.distance <= 500)
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 4);
+  }
+
+  res.render('index', {
+    hotTours, promotions, categories, recommendTours, recommendReasons,
+    nearbyTours,
+    userLocation: req.session?.userLocation || null,
+    userInterests: req.session.userInterests || [],
+    bookingCount: db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status != 'cancelled'").get().count
+  });
 });
 
 // Search page
@@ -93,6 +152,12 @@ app.get('/search', (req, res) => {
   const { q } = req.query;
   const { getDb } = require('./database/init');
   const db = getDb();
+
+  // Track search behavior
+  if (q && q.trim()) {
+    const { trackBehavior } = require('./middlewares/recommend');
+    trackBehavior(req.session, 'search', { query: q.trim() });
+  }
 
   let tours = [];
   let questions = [];
@@ -136,12 +201,15 @@ app.get('/lywd', (req, res) => {
 app.get('/zmzg', (req, res) => {
   const { getDb } = require('./database/init');
   const db = getDb();
+  // Foreign cities to exclude from 最美中国
+  const foreignCities = ['曼谷','马累','东京','巴黎','巴厘岛','迪拜','伊斯坦布尔','大阪','首尔','新加坡','普吉','开罗','悉尼','基督城','加德满都','莫斯科'];
+  const placeholders = foreignCities.map(() => '?').join(',');
   const tours = db.prepare(`
     SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
     LEFT JOIN categories c ON t.category_id = c.id
-    WHERE t.id >= 10 OR t.id = 3
+    WHERE t.city NOT IN (${placeholders}) AND t.city != ''
     ORDER BY t.created_at DESC
-  `).all();
+  `).all(...foreignCities);
   res.render('zmzg', { tours });
 });
 
@@ -149,12 +217,14 @@ app.get('/zmzg', (req, res) => {
 app.get('/gwjd', (req, res) => {
   const { getDb } = require('./database/init');
   const db = getDb();
+  const foreignCities = ['曼谷','马累','东京','巴黎','巴厘岛','迪拜','伊斯坦布尔','大阪','首尔','新加坡','普吉','开罗','悉尼','基督城','加德满都','莫斯科'];
+  const placeholders = foreignCities.map(() => '?').join(',');
   const tours = db.prepare(`
     SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
     LEFT JOIN categories c ON t.category_id = c.id
-    WHERE (c.slug = 'abroad-long' OR c.slug = 'self-tour') AND t.id NOT IN (3, 12, 13, 17)
+    WHERE t.city IN (${placeholders})
     ORDER BY t.created_at DESC
-  `).all();
+  `).all(...foreignCities);
   res.render('gwjd', { tours });
 });
 
@@ -169,6 +239,14 @@ app.get('/tour/:id', (req, res) => {
     LEFT JOIN categories c ON t.category_id = c.id WHERE t.id = ?
   `).get(req.params.id);
   if (!tour) return res.status(404).render('error', { message: '线路不存在' });
+
+  // Track viewing history for recommendations
+  const { trackBehavior } = require('./middlewares/recommend');
+  trackBehavior(req.session, 'view_tour', { tourId: tour.id });
+  if (!req.session.viewedCategories) req.session.viewedCategories = {};
+  const cat = tour.category_id;
+  req.session.viewedCategories[cat] = (req.session.viewedCategories[cat] || 0) + 1;
+
   const reviews = db.prepare('SELECT * FROM reviews WHERE tour_id = ? ORDER BY created_at DESC LIMIT 5').all(req.params.id);
   res.render('tour-detail', { tour, reviews });
 });
@@ -249,6 +327,36 @@ app.get('/kefu', (req, res) => {
 // Static fallback — serve remaining static files (html, png, jpg, etc.)
 // This runs AFTER route handlers so page routes take priority
 app.use(express.static(path.join(__dirname, '..')));
+
+// === Nearby Tours page (定位周边游) ===
+app.get('/nearby', (req, res) => {
+  const { getDb } = require('./database/init');
+  const db = getDb();
+
+  // Get all located tours grouped by city
+  const tours = db.prepare(`
+    SELECT t.*, c.name as category_name, c.name_en as category_name_en 
+    FROM tours t 
+    LEFT JOIN categories c ON t.category_id = c.id 
+    WHERE t.latitude != 0 AND t.longitude != 0
+    ORDER BY t.city, t.is_hot DESC
+  `).all();
+
+  // Group by city
+  const cityMap = {};
+  tours.forEach(t => {
+    const city = t.city || '其他';
+    if (!cityMap[city]) cityMap[city] = [];
+    cityMap[city].push(t);
+  });
+
+  res.render('nearby', {
+    tours,
+    cityGroups: Object.entries(cityMap),
+    totalCities: Object.keys(cityMap).length,
+    userLocation: req.session?.userLocation || null
+  });
+});
 
 // 404 handler
 app.use((req, res) => {

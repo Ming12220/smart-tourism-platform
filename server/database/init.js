@@ -119,6 +119,16 @@ function initDatabase() {
       FOREIGN KEY (tour_id) REFERENCES tours(id),
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
+
+    CREATE TABLE IF NOT EXISTS knowledge_base (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      keywords TEXT NOT NULL,
+      question TEXT NOT NULL,
+      answer TEXT NOT NULL,
+      category TEXT DEFAULT 'general',
+      sort_order INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Seed data if empty

@@ -31,9 +31,29 @@ router.get('/', (req, res) => {
   const bookingCount = db.prepare('SELECT COUNT(*) as count FROM bookings').get().count;
   const pendingBookingCount = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status='pending'").get().count;
 
+  // Revenue stats
+  const revenueStats = db.prepare(`
+    SELECT
+      COALESCE(SUM(CASE WHEN b.status!='cancelled' THEN b.total_price ELSE 0 END), 0) as total_revenue,
+      COUNT(*) as total_bookings,
+      SUM(CASE WHEN b.status='pending' THEN 1 ELSE 0 END) as pending,
+      SUM(CASE WHEN b.status='confirmed' THEN 1 ELSE 0 END) as confirmed,
+      SUM(CASE WHEN b.status='completed' THEN 1 ELSE 0 END) as completed
+    FROM bookings b
+  `).get();
+
+  // Recent bookings
+  const recentBookings = db.prepare(`
+    SELECT b.*, t.title as tour_title
+    FROM bookings b JOIN tours t ON b.tour_id = t.id
+    ORDER BY b.created_at DESC LIMIT 5
+  `).all();
+
   res.render('admin/dashboard', {
     user: req.session.user,
-    stats: { tourCount, userCount, questionCount, contactCount, bookingCount, pendingBookingCount }
+    stats: { tourCount, userCount, questionCount, contactCount, bookingCount, pendingBookingCount },
+    revenueStats,
+    recentBookings
   });
 });
 
@@ -67,7 +87,7 @@ router.get('/tours/edit/:id', (req, res) => {
 // Save tour (create or update)
 router.post('/tours/save', upload.single('image'), (req, res) => {
   const db = getDb();
-  const { id, title, category_id, type_label, description, price, original_price, satisfaction, transport, days, highlights, route, is_hot, is_promotion, promotion_end } = req.body;
+  const { id, title, category_id, type_label, description, price, original_price, satisfaction, transport, days, highlights, route, details, details_en, is_hot, is_promotion, promotion_end } = req.body;
 
   if (!title || !price) {
     const categories = db.prepare('SELECT * FROM categories ORDER BY sort_order').all();
@@ -81,26 +101,28 @@ router.post('/tours/save', upload.single('image'), (req, res) => {
   let image = req.file ? req.file.filename : null;
 
   if (id) {
-    // Update
+    // Update (with details)
     if (image) {
       db.prepare(`
         UPDATE tours SET title=?, category_id=?, type_label=?, description=?, price=?, original_price=?,
-        satisfaction=?, image=?, transport=?, days=?, highlights=?, route=?, is_hot=?, is_promotion=?, promotion_end=?, updated_at=CURRENT_TIMESTAMP
+        satisfaction=?, image=?, transport=?, days=?, highlights=?, route=?, details=?, details_en=?,
+        is_hot=?, is_promotion=?, promotion_end=?, updated_at=CURRENT_TIMESTAMP
         WHERE id=?
-      `).run(title, category_id, type_label, description, price, original_price, satisfaction, image, transport, days, highlights, route, is_hot || 0, is_promotion || 0, promotion_end, id);
+      `).run(title, category_id, type_label, description, price, original_price, satisfaction, image, transport, days, highlights, route, details, details_en, is_hot || 0, is_promotion || 0, promotion_end, id);
     } else {
       db.prepare(`
         UPDATE tours SET title=?, category_id=?, type_label=?, description=?, price=?, original_price=?,
-        satisfaction=?, transport=?, days=?, highlights=?, route=?, is_hot=?, is_promotion=?, promotion_end=?, updated_at=CURRENT_TIMESTAMP
+        satisfaction=?, transport=?, days=?, highlights=?, route=?, details=?, details_en=?,
+        is_hot=?, is_promotion=?, promotion_end=?, updated_at=CURRENT_TIMESTAMP
         WHERE id=?
-      `).run(title, category_id, type_label, description, price, original_price, satisfaction, transport, days, highlights, route, is_hot || 0, is_promotion || 0, promotion_end, id);
+      `).run(title, category_id, type_label, description, price, original_price, satisfaction, transport, days, highlights, route, details, details_en, is_hot || 0, is_promotion || 0, promotion_end, id);
     }
   } else {
-    // Insert
+    // Insert (with details)
     db.prepare(`
-      INSERT INTO tours (title, category_id, type_label, description, price, original_price, satisfaction, image, transport, days, highlights, route, is_hot, is_promotion, promotion_end)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(title, category_id, type_label, description, price, original_price, satisfaction, image || 'tour1.jpg', transport, days, highlights, route, is_hot || 0, is_promotion || 0, promotion_end);
+      INSERT INTO tours (title, category_id, type_label, description, price, original_price, satisfaction, image, transport, days, highlights, route, details, details_en, is_hot, is_promotion, promotion_end)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(title, category_id, type_label, description, price, original_price, satisfaction, image || 'tour1.jpg', transport, days, highlights, route, details, details_en, is_hot || 0, is_promotion || 0, promotion_end);
   }
 
   res.redirect('/admin/tours');
@@ -154,7 +176,7 @@ router.get('/bookings', (req, res) => {
   const db = getDb();
   const status = req.query.status;
   let sql = `
-    SELECT b.*, t.title as tour_title
+    SELECT b.*, t.title as tour_title, t.image, t.days, t.type_label
     FROM bookings b JOIN tours t ON b.tour_id = t.id
   `;
   const params = [];
@@ -164,15 +186,48 @@ router.get('/bookings', (req, res) => {
   }
   sql += ` ORDER BY b.created_at DESC`;
   const bookings = db.prepare(sql).all(...params);
-  res.render('admin/bookings', { user: req.session.user, bookings, currentStatus: status || 'all' });
+
+  // Stats
+  const stats = db.prepare(`
+    SELECT
+      COUNT(*) as total,
+      SUM(CASE WHEN b.status='pending' THEN 1 ELSE 0 END) as pending_count,
+      SUM(CASE WHEN b.status='confirmed' THEN 1 ELSE 0 END) as confirmed_count,
+      SUM(CASE WHEN b.status='completed' THEN 1 ELSE 0 END) as completed_count,
+      SUM(CASE WHEN b.status='cancelled' THEN 1 ELSE 0 END) as cancelled_count,
+      COALESCE(SUM(CASE WHEN b.status!='cancelled' THEN b.total_price ELSE 0 END), 0) as total_revenue
+    FROM bookings b
+  `).get();
+
+  res.render('admin/bookings', { user: req.session.user, bookings, currentStatus: status || 'all', stats });
 });
 
-// Update booking status
+// Booking detail page
+router.get('/bookings/detail/:id', (req, res) => {
+  const db = getDb();
+  const booking = db.prepare(`
+    SELECT b.*, t.title as tour_title, t.image, t.days, t.type_label, t.price as unit_price
+    FROM bookings b JOIN tours t ON b.tour_id = t.id
+    WHERE b.id = ?
+  `).get(req.params.id);
+
+  if (!booking) {
+    return res.redirect('/admin/bookings');
+  }
+
+  res.render('admin/booking-detail', { user: req.session.user, booking });
+});
+
+// Update booking status (with redirect support)
 router.post('/bookings/status', (req, res) => {
-  const { id, status } = req.body;
+  const { id, status, redirect } = req.body;
   const db = getDb();
   db.prepare('UPDATE bookings SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(status, id);
-  res.redirect('/admin/bookings');
+  if (redirect) {
+    res.redirect(redirect);
+  } else {
+    res.redirect('/admin/bookings');
+  }
 });
 
 // Knowledge base management

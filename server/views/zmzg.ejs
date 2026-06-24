@@ -3,73 +3,75 @@
 
 <div class="content-wrapper" style="display:block;padding-top:60px;">
   <div style="max-width:1400px;margin:0 auto;">
-    <h1 style="color:#666;font-size:28px;border-bottom:2px solid #59b200;padding-bottom:15px;">最美中国</h1>
-    <p style="color:#898988;font-size:14px;margin-top:5px;">国内旅游景点图文展示，发现中国之美</p>
+    <h1 style="color:#666;font-size:28px;border-bottom:2px solid #59b200;padding-bottom:15px;"><%= __('zmzg.title') %></h1>
+    <p style="color:#898988;font-size:14px;margin-top:5px;"><%= __('zmzg.desc') %></p>
 
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:30px;margin-top:20px;">
+    <div class="zmzg-grid">
       <!-- Main -->
       <div>
         <!-- Filter tabs -->
         <div style="background:#eee;padding:14px;display:flex;justify-content:space-between;align-items:center;border-radius:4px;margin-bottom:20px;">
           <div style="display:flex;gap:0;">
-            <span style="background:#fff;border-top:2px solid #59b200;padding:10px 30px;cursor:pointer;border-radius:4px 4px 0 0;">限时特价</span>
-            <span style="padding:10px 30px;cursor:pointer;color:#6e6e6e;">热门推荐</span>
+            <span style="background:#fff;border-top:2px solid #59b200;padding:10px <%= isEn ? '20px' : '30px' %>;cursor:pointer;border-radius:4px 4px 0 0;white-space:nowrap;"><%= isEn ? 'Special Offers' : '限时特价' %></span>
+            <span style="padding:10px <%= isEn ? '20px' : '30px' %>;cursor:pointer;color:#6e6e6e;white-space:nowrap;"><%= isEn ? 'Recommended' : '热门推荐' %></span>
           </div>
           <div style="display:flex;gap:5px;">
-            <span style="padding:2px 10px;cursor:pointer;color:#6e6e6e;border-radius:3px;font-size:13px;">价格</span>
-            <span style="padding:2px 10px;cursor:pointer;color:#6e6e6e;border-radius:3px;font-size:13px;">折扣</span>
-            <span style="padding:2px 10px;cursor:pointer;color:#6e6e6e;border-radius:3px;font-size:13px;">推荐</span>
+            <span style="padding:2px 10px;cursor:pointer;color:#6e6e6e;border-radius:3px;font-size:13px;"><%= isEn ? 'Price' : '价格' %></span>
+            <span style="padding:2px 10px;cursor:pointer;color:#6e6e6e;border-radius:3px;font-size:13px;"><%= isEn ? 'Discount' : '折扣' %></span>
+            <span style="padding:2px 10px;cursor:pointer;color:#6e6e6e;border-radius:3px;font-size:13px;"><%= isEn ? 'Rating' : '推荐' %></span>
           </div>
         </div>
 
         <!-- Tour cards -->
         <% tours.forEach(function(tour) { %>
           <% var discount = tour.original_price && tour.original_price > 0 ? (tour.price / tour.original_price * 10).toFixed(1) : '0'; %>
-          <a href="/tour/<%= tour.id %>" style="text-decoration:none;color:inherit;display:block;">
-          <div style="display:flex;border:1px solid #ddd;margin-bottom:20px;border-radius:4px;overflow:hidden;background:#fff;cursor:pointer;transition:box-shadow 0.3s;" onmouseover="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-            <div style="width:380px;min-height:230px;position:relative;flex-shrink:0;">
+          <a href="/tour/<%= tour.id %><%= isEn ? '?lang=en' : '' %>" style="text-decoration:none;color:inherit;display:block;">
+          <div style="display:flex;border:1px solid #ddd;margin-bottom:20px;border-radius:4px;overflow:hidden;background:#fff;cursor:pointer;transition:box-shadow 0.3s;" class="zmzg-card" onmouseover="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <div style="width:380px;min-height:230px;position:relative;flex-shrink:0;" class="zmzg-card-img">
               <img src="/img/<%= tour.image %>" alt="<%= tt(tour, 'title') %>" style="width:100%;height:100%;object-fit:cover;">
               <span style="position:absolute;bottom:0;left:0;background:#59b200;color:#fff;padding:3px 12px;font-size:13px;"><%= tt(tour, 'type_label') %></span>
             </div>
             <div style="flex:1;padding:20px 30px;position:relative;">
               <h3 style="margin:0 0 8px;font-size:18px;color:#333;"><%= tt(tour, 'title') %></h3>
-              <p style="color:#666;font-size:14px;line-height:1.5;margin:0 0 10px;width:270px;"><%= tt(tour, 'description') %></p>
+              <div style="display:flex;gap:15px;">
+                <div style="flex:1;min-width:0;">
+                  <p style="color:#666;font-size:14px;line-height:1.5;margin:0 0 10px;<%= isEn ? '' : 'width:270px;' %>"><%= tt(tour, 'description') %></p>
 
-              <!-- Price & buy -->
-              <div style="position:absolute;top:20px;right:130px;text-align:right;">
-                <div style="color:#ff6600;font-size:20px;font-weight:bold;">¥<%= tour.price %></div>
-                <% if (tour.original_price && tour.original_price > tour.price) { %>
-                  <div style="color:#999;font-size:12px;text-decoration:line-through;">¥<%= tour.original_price %></div>
-                <% } %>
-              </div>
-              <button style="position:absolute;top:60px;right:20px;width:110px;height:36px;background:#ff6600;color:#fff;border:none;border-radius:4px;cursor:pointer;">立即抢购</button>
-              <div style="position:absolute;top:105px;right:20px;font-size:13px;color:#666;">
-                <input type="number" value="1" style="width:40px;padding:2px;text-align:center;border:1px solid #ddd;"> 人 ¥<span style="color:red;font-weight:bold;"><%= tour.price %></span>
-              </div>
-
-              <!-- Transport info -->
-              <div style="margin-top:10px;">
-                <p style="margin:5px 0;font-size:13px;color:#666;">
-                  <span style="border:1px solid #59b200;color:#59b200;padding:1px 4px;border-radius:3px;font-size:12px;">交通</span>
-                  <%= tour.transport || '待定' %>
-                </p>
-                <p style="margin:5px 0;font-size:13px;color:#666;">
-                  <span style="border:1px solid #59b200;color:#59b200;padding:1px 4px;border-radius:3px;font-size:12px;">团期</span>
-                  <%= tour.days || '待定' %>
-                </p>
+                  <!-- Transport info -->
+                  <div style="margin-top:10px;">
+                    <p style="margin:5px 0;font-size:13px;color:#666;">
+                      <span style="border:1px solid #59b200;color:#59b200;padding:1px 4px;border-radius:3px;font-size:12px;"><%= isEn ? 'Trans' : '交通' %></span>
+                      <%= tt(tour, 'transport') || (isEn ? 'TBD' : '待定') %>
+                    </p>
+                    <p style="margin:5px 0;font-size:13px;color:#666;">
+                      <span style="border:1px solid #59b200;color:#59b200;padding:1px 4px;border-radius:3px;font-size:12px;"><%= isEn ? 'Days' : '团期' %></span>
+                      <%= tour.days || (isEn ? 'TBD' : '待定') %>
+                    </p>
+                  </div>
+                </div>
+                <div style="flex-shrink:0;text-align:center;min-width:<%= isEn ? '130px' : '110px' %>;">
+                  <!-- Price -->
+                  <div style="color:#ff6600;font-size:20px;font-weight:bold;">¥<%= tour.price %></div>
+                  <% if (tour.original_price && tour.original_price > tour.price) { %>
+                    <div style="color:#999;font-size:12px;text-decoration:line-through;">¥<%= tour.original_price %></div>
+                  <% } %>
+                  <button style="margin-top:8px;width:110px;height:36px;background:#ff6600;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;"><%= isEn ? 'Book Now' : '立即抢购' %></button>
+                  <div style="margin-top:6px;font-size:13px;color:#666;">
+                    <input type="number" value="1" style="width:40px;padding:2px;text-align:center;border:1px solid #ddd;font-size:12px;"> <%= isEn ? 'pax' : '人' %> ¥<span style="color:red;font-weight:bold;"><%= tour.price %></span>
+                  </div>
+                  <!-- Discount tag -->
+                  <% if (discount < 10) { %>
+                    <div style="margin:8px auto 0;width:52px;height:52px;background:url(/img/disc.png) no-repeat center;background-size:contain;display:flex;align-items:center;justify-content:center;">
+                      <span style="color:#ff6600;font-size:12px;font-weight:bold;"><%= discount %><%= isEn ? '% off' : '折' %></span>
+                    </div>
+                  <% } %>
+                </div>
               </div>
 
               <!-- Promotion badge -->
               <% if (tour.is_promotion) { %>
-                <div style="margin-top:5px;background:#fafafa;padding:8px 30px;margin-left:-30px;margin-right:-30px;font-size:12px;color:#999;margin-bottom:0;">
-                  ⏰ 本团游由智慧旅游赞助提供，截止于 <span style="color:#59b200;"><%= tour.promotion_end || '长期有效' %></span>
-                </div>
-              <% } %>
-
-              <!-- Discount tag -->
-              <% if (discount < 10) { %>
-                <div style="position:absolute;right:20px;top:150px;width:52px;height:52px;background:url(/img/disc.png) no-repeat center;background-size:contain;display:flex;align-items:center;justify-content:center;">
-                  <span style="transform:rotate(45deg);color:#ff6600;font-size:12px;font-weight:bold;"><%= discount %>折</span>
+                <div style="margin-top:10px;background:#fafafa;padding:8px 30px;margin-left:-30px;margin-right:-30px;font-size:12px;color:#999;">
+                  <%= isEn ? '⏰ Sponsored by Smart Tourism, valid until' : '⏰ 本团游由智慧旅游赞助提供，截止于' %> <span style="color:#59b200;"><%= tour.promotion_end || (isEn ? 'Long-term' : '长期有效') %></span>
                 </div>
               <% } %>
             </div>
@@ -77,84 +79,88 @@
         <% }) %>
 
         <div style="text-align:center;margin:20px 0;">
-          <button style="padding:10px 60px;border:1px solid #d0d0d0;background:#fff;border-radius:4px;color:#838383;cursor:pointer;">加载更多...</button>
+          <button style="padding:10px 60px;border:1px solid #d0d0d0;background:#fff;border-radius:4px;color:#838383;cursor:pointer;"><%= isEn ? 'Load More...' : '加载更多...' %></button>
         </div>
       </div>
 
       <!-- Sidebar -->
       <div>
-        <!-- 国内热门景点推荐 -->
+        <!-- Popular domestic spots -->
         <div style="border:2px solid #efefef;border-radius:4px;margin-bottom:20px;">
           <div style="padding:10px;background:#fafafa;border-bottom:1px solid #efefef;display:flex;justify-content:space-between;">
-            <span style="font-size:15px;color:#767676;">🏷️ 国内热门景点</span>
-            <a href="/zmzg" style="font-size:12px;color:#59b200;text-decoration:none;">更多→</a>
+            <span style="font-size:15px;color:#767676;">🏷️ <%= isEn ? 'Hot Domestic Spots' : '国内热门景点' %></span>
+            <a href="/zmzg<%= isEn ? '?lang=en' : '' %>" style="font-size:12px;color:#59b200;text-decoration:none;"><%= isEn ? 'More' : '更多' %>→</a>
           </div>
           <div style="padding:10px;">
-            <table style="width:100%;">
+            <table style="width:100%;word-break:break-word;">
+              <% var spotPairs = [
+                [{ en:'Huangshan', cn:'🏔️ 黄山 · 天下第一奇山', id:10, c1:'#fff8e1', c2:'#e65100' },
+                 { en:'Jiuzhaigou', cn:'🌊 九寨沟 · 人间仙境', id:11, c1:'#e8f5e9', c2:'#2e7d32' }],
+                [{ en:'Sanya', cn:'🏝️ 三亚 · 天涯海角', id:12, c1:'#e3f2fd', c2:'#1565c0' },
+                 { en:'Lijiang', cn:'🏯 丽江 · 玉龙雪山', id:13, c1:'#fce4ec', c2:'#c62828' }],
+                [{ en:'Zhangjiajie', cn:'🏔️ 张家界 · 阿凡达仙境', id:14, c1:'#f3e5f5', c2:'#6a1b9a' },
+                 { en:'Guilin', cn:'🎋 桂林 · 山水甲天下', id:15, c1:'#e0f7fa', c2:'#006064' }],
+                [{ en:'Hainan', cn:'🏖️ 海南 · 热带度假', id:3, c1:'#fff3e0', c2:'#e65100' },
+                 { en:'Xi\'an', cn:'🛕 西安 · 千年古都', id:16, c1:'#e8eaf6', c2:'#283593' }],
+                [{ en:'Xishuangbanna', cn:'🌺 西双版纳 · 热带雨林', id:17, c1:'#fbe9e7', c2:'#bf360c' },
+                 { en:'Wuzhen', cn:'🏘️ 乌镇 · 梦里水乡', id:18, c1:'#e0f2f1', c2:'#004d40' }],
+                [{ en:'Forbidden City', cn:'🏰 故宫 · 紫禁城深度游', id:19, c1:'#fce4ec', c2:'#c62828' },
+                 { en:'Dunhuang', cn:'🎨 敦煌 · 莫高窟', id:30, c1:'#e0f2f1', c2:'#004d40' }]
+              ]; %>
+              <% spotPairs.forEach(function(pair) { %>
               <tr>
-                <td style="padding:8px;background:#fff8e1;font-size:14px;color:#e65100;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/10'">🏔️ 黄山 · 天下第一奇山</td>
-                <td style="padding:8px;background:#e8f5e9;font-size:14px;color:#2e7d32;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/11'">🌊 九寨沟 · 人间仙境</td>
+                <% pair.forEach(function(s) { %>
+                <td style="padding:8px;background:<%= s.c1 %>;font-size:14px;color:<%= s.c2 %>;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/<%= s.id %><%= isEn ? '?lang=en' : '' %>'">
+                  <%= isEn ? s.en : s.cn %>
+                </td>
+                <% }); %>
               </tr>
-              <tr>
-                <td style="padding:8px;background:#e3f2fd;font-size:14px;color:#1565c0;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/12'">🏝️ 三亚 · 天涯海角</td>
-                <td style="padding:8px;background:#fce4ec;font-size:14px;color:#c62828;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/13'">🏯 丽江 · 玉龙雪山</td>
-              </tr>
-              <tr>
-                <td style="padding:8px;background:#f3e5f5;font-size:14px;color:#6a1b9a;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/14'">🏔️ 张家界 · 阿凡达仙境</td>
-                <td style="padding:8px;background:#e0f7fa;font-size:14px;color:#006064;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/15'">🎋 桂林 · 山水甲天下</td>
-              </tr>
-              <tr>
-                <td style="padding:8px;background:#fff3e0;font-size:14px;color:#e65100;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/3'">🏖️ 海南 · 热带度假</td>
-                <td style="padding:8px;background:#e8eaf6;font-size:14px;color:#283593;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/16'">🛕 西安 · 千年古都</td>
-              </tr>
-              <tr>
-                <td style="padding:8px;background:#fbe9e7;font-size:14px;color:#bf360c;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/17'">🌺 西双版纳 · 热带雨林</td>
-                <td style="padding:8px;background:#e0f2f1;font-size:14px;color:#004d40;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/18'">🏘️ 乌镇 · 梦里水乡</td>
-              </tr>
-              <tr>
-                <td style="padding:8px;background:#fce4ec;font-size:14px;color:#c62828;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/19'">🏰 故宫 · 紫禁城深度游</td>
-                <td style="padding:8px;background:#e0f2f1;font-size:14px;color:#004d40;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/12'">🏝️ 海南 · 三亚度假</td>
-              </tr>
+              <% }); %>
             </table>
           </div>
         </div>
 
-        <!-- 热门景点图集 -->
+        <!-- Photo gallery -->
         <div style="border:2px solid #efefef;border-radius:4px;margin-bottom:20px;">
           <div style="padding:10px;background:#fafafa;border-bottom:1px solid #efefef;display:flex;justify-content:space-between;">
-            <span style="font-size:15px;color:#767676;">📸 精彩图集</span>
+            <span style="font-size:15px;color:#767676;">📸 <%= isEn ? 'Gallery' : '精彩图集' %></span>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:10px;">
             <% var spots = [
-              {img:'t10.jpg', name:'黄山云海', id:10},
-              {img:'t11.jpg', name:'九寨沟', id:11},
-              {img:'t18.jpg', name:'乌镇水乡', id:18},
-              {img:'t14.jpg', name:'张家界', id:14},
-              {img:'t15.jpg', name:'桂林漓江', id:15},
-              {img:'t13.jpg', name:'丽江古镇', id:13}
+              {img:'t10.jpg', nameEn:'Yellow Mountain', name:'黄山云海', id:10},
+              {img:'t11.jpg', nameEn:'Jiuzhaigou', name:'九寨沟', id:11},
+              {img:'t18.jpg', nameEn:'Wuzhen Water Town', name:'乌镇水乡', id:18},
+              {img:'t14.jpg', nameEn:'Zhangjiajie', name:'张家界', id:14},
+              {img:'t15.jpg', nameEn:'Li River', name:'桂林漓江', id:15},
+              {img:'t13.jpg', nameEn:'Lijiang Old Town', name:'丽江古镇', id:13}
             ]; %>
             <% spots.forEach(function(s) { %>
               <div style="text-align:center;position:relative;">
-                <img src="/img/<%= s.img %>" alt="<%= s.name %>" style="width:100%;height:80px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/<%= s.id %>'">
-                <span style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.5);color:#fff;font-size:11px;padding:1px 6px;border-radius:2px;"><%= s.name %></span>
+                <img src="/img/<%= s.img %>" alt="<%= isEn ? s.nameEn : s.name %>" style="width:100%;height:80px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="location.href='/tour/<%= s.id %><%= isEn ? '?lang=en' : '' %>'">
+                <span style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.5);color:#fff;font-size:11px;padding:1px 6px;border-radius:2px;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= isEn ? s.nameEn : s.name %></span>
               </div>
             <% }) %>
           </div>
         </div>
 
-        <!-- 旅游百宝箱 -->
+        <!-- Toolbox -->
         <div style="border:2px solid #efefef;border-radius:4px;">
           <div style="padding:10px;background:#fafafa;border-bottom:1px solid #efefef;">
-            <span style="font-size:15px;color:#767676;">🏆 旅游百宝箱</span>
+            <span style="font-size:15px;color:#767676;">🏆 <%= isEn ? 'Travel Toolbox' : '旅游百宝箱' %></span>
           </div>
           <div style="padding:10px;">
             <table style="width:100%;">
-              <tr><td style="padding:10px;background:#fff8e1;font-size:14px;color:#666;border-radius:4px;cursor:pointer;" onclick="window.open('https://www.weather.com.cn','_blank')">🌤️ 全国天气查询</td></tr>
-              <tr><td style="padding:10px;background:#e8f5e9;font-size:14px;color:#666;border-radius:4px;cursor:pointer;" onclick="window.open('https://www.12306.cn','_blank')">🚄 铁路12306 购票</td></tr>
-              <tr><td style="padding:10px;background:#e3f2fd;font-size:14px;color:#666;border-radius:4px;cursor:pointer;" onclick="window.open('https://flights.ctrip.com','_blank')">✈️ 携程机票查询</td></tr>
-              <tr><td style="padding:10px;background:#fce4ec;font-size:14px;color:#666;border-radius:4px;cursor:pointer;" onclick="window.open('https://hotels.ctrip.com','_blank')">🏨 携程酒店预订</td></tr>
-              <tr><td style="padding:10px;background:#f3e5f5;font-size:14px;color:#666;border-radius:4px;cursor:pointer;" onclick="window.open('https://map.baidu.com','_blank')">🗺️ 百度地图导航</td></tr>
-              <tr><td style="padding:10px;background:#fff3e0;font-size:14px;color:#666;border-radius:4px;cursor:pointer;" onclick="window.open('https://www.mafengwo.cn','_blank')">📝 马蜂窝旅游攻略</td></tr>
+              <% var tools = [
+                {en:'🌤️ Weather Forecast', cn:'🌤️ 全国天气查询', url:'https://www.weather.com.cn', c1:'#fff8e1'},
+                {en:'🚄 Train Tickets (12306)', cn:'🚄 铁路12306 购票', url:'https://www.12306.cn', c1:'#e8f5e9'},
+                {en:'✈️ Flight Booking', cn:'✈️ 携程机票查询', url:'https://flights.ctrip.com', c1:'#e3f2fd'},
+                {en:'🏨 Hotel Booking', cn:'🏨 携程酒店预订', url:'https://hotels.ctrip.com', c1:'#fce4ec'},
+                {en:'🗺️ Baidu Maps', cn:'🗺️ 百度地图导航', url:'https://map.baidu.com', c1:'#f3e5f5'},
+                {en:'📝 Travel Guides', cn:'📝 马蜂窝旅游攻略', url:'https://www.mafengwo.cn', c1:'#fff3e0'}
+              ]; %>
+              <% tools.forEach(function(t) { %>
+              <tr><td style="padding:10px;background:<%= t.c1 %>;font-size:14px;color:#666;border-radius:4px;cursor:pointer;" onclick="window.open('<%= t.url %>','_blank')"><%= isEn ? t.en : t.cn %></td></tr>
+              <% }); %>
             </table>
           </div>
         </div>
