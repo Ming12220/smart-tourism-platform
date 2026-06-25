@@ -590,13 +590,18 @@ body { background:#fafbfc; }
   %>
   window.toggleHeroChip = function(el){
     var key = el.getAttribute('data-key');
-    var idx = selectedHeroChips.indexOf(key);
-    if(idx >= 0){ selectedHeroChips.splice(idx,1); el.classList.remove('active'); }
-    else { selectedHeroChips.push(key); el.classList.add('active'); }
-    fetch('/api/preferences', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({interests:selectedHeroChips})
-    }).catch(function(){});
+    // Map chip keywords to broader search terms
+    var searchMap = {
+      '自然风光': '自然 风光 山水 风景',
+      '海岛度假': '海岛 海滩 三亚 马尔代夫 普吉 巴厘',
+      '历史文化': '文化 历史 古城 古迹 园林 寺庙',
+      '美食之旅': '美食 小吃 火锅 海鲜',
+      '亲子游': '亲子 乐园 动物园',
+      '蜜月旅行': '蜜月 浪漫 海岛 三亚 马尔代夫'
+    };
+    var searchTerm = searchMap[key] || key;
+    var langParam = window.location.href.indexOf('lang=en') >= 0 ? '&lang=en' : '';
+    window.location.href = '/search?q=' + encodeURIComponent(searchTerm) + langParam;
   };
 
   // Nearby location

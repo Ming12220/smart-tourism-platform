@@ -251,8 +251,12 @@ router.get('/search', (req, res) => {
     SELECT t.*, c.name as category_name, c.name_en as category_name_en
     FROM tours t LEFT JOIN categories c ON t.category_id = c.id
     WHERE t.title LIKE ? OR t.description LIKE ? OR t.title_en LIKE ?
-    LIMIT 10
-  `).all(`%${q}%`, `%${q}%`, `%${q}%`);
+       OR t.description_en LIKE ? OR t.highlights LIKE ? OR t.highlights_en LIKE ?
+       OR t.city LIKE ? OR t.location_name LIKE ? OR t.type_label LIKE ?
+       OR t.details LIKE ? OR t.details_en LIKE ?
+    ORDER BY t.is_hot DESC, t.is_promotion DESC, t.satisfaction DESC
+    LIMIT 30
+  `).all(`%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`);
 
   const questions = db.prepare(`
     SELECT * FROM questions WHERE title LIKE ? OR content LIKE ?

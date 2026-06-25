@@ -173,13 +173,38 @@ app.get('/search', (req, res) => {
   let questions = [];
 
   if (q && q.trim()) {
-    const query = `%${q.trim()}%`;
-    tours = db.prepare(`
-      SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
-      LEFT JOIN categories c ON t.category_id = c.id
-      WHERE t.title LIKE ? OR t.description LIKE ? OR t.title_en LIKE ? OR t.description_en LIKE ?
-      LIMIT 20
-    `).all(query, query, query, query);
+    const words = q.trim().split(/\s+/).filter(function(w){ return w.length > 0; });
+    if (words.length === 1) {
+      var query = '%' + q.trim() + '%';
+      tours = db.prepare(`
+        SELECT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
+        LEFT JOIN categories c ON t.category_id = c.id
+        WHERE t.title LIKE ? OR t.description LIKE ? OR t.title_en LIKE ?
+           OR t.description_en LIKE ? OR t.highlights LIKE ? OR t.highlights_en LIKE ?
+           OR t.city LIKE ? OR t.location_name LIKE ? OR t.type_label LIKE ?
+           OR t.details LIKE ? OR t.details_en LIKE ?
+        ORDER BY t.is_hot DESC, t.is_promotion DESC, t.satisfaction DESC
+        LIMIT 30
+      `).all(query, query, query, query, query, query, query, query, query, query, query);
+    } else {
+      var conditions = [];
+      var params = [];
+      words.forEach(function(w) {
+        var like = '%' + w + '%';
+        conditions.push('(t.title LIKE ? OR t.description LIKE ? OR t.title_en LIKE ?' +
+           ' OR t.description_en LIKE ? OR t.highlights LIKE ? OR t.highlights_en LIKE ?' +
+           ' OR t.city LIKE ? OR t.location_name LIKE ? OR t.type_label LIKE ?' +
+           ' OR t.details LIKE ? OR t.details_en LIKE ?)');
+        for (var i = 0; i < 11; i++) params.push(like);
+      });
+      tours = db.prepare(`
+        SELECT DISTINCT t.*, c.name as category_name, c.name_en as category_name_en FROM tours t
+        LEFT JOIN categories c ON t.category_id = c.id
+        WHERE ${conditions.join(' OR ')}
+        ORDER BY t.is_hot DESC, t.is_promotion DESC, t.satisfaction DESC
+        LIMIT 30
+      `).all(params);
+    }
 
     questions = db.prepare(`
       SELECT * FROM questions WHERE title LIKE ? OR content LIKE ?
